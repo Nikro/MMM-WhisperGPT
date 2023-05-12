@@ -1,0 +1,18 @@
+# Node.js build artifacts
+node_modules/
+npm-debug.log
+
+# Visual Studio Code settings
+.vscode/
+.idea/
+.idea
+
+# MagicMirror config
+config.js
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Docker volume data
+*.data/
