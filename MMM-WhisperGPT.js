@@ -9,14 +9,14 @@
 
 Module.register("MMM-WhisperGPT", {
 	defaults: {
-    state: 'idle',
-    text: 'Shhh! WhisperGPT is listening...'
+    state: 'idle'
 	},
 
 	requiresVersion: "2.1.0", // Required version of MagicMirror
 
 	start: function() {
     Log.info("Starting module: " + this.name);
+    this.state = 'idle';
 	},
 
   getDom: function() {
@@ -48,7 +48,12 @@ Module.register("MMM-WhisperGPT", {
     return wrapper;
   },
 
-	getScripts: function() {
+  getHeader: function() {
+    return 'WhisperGPT';
+  },
+
+
+  getScripts: function() {
 		return [];
 	},
 
