@@ -135,7 +135,7 @@ module.exports = NodeHelper.create({
   },
 
   playSound: function playSound(soundFilePath) {
-    Player.play(soundFilePath, { timeout: 300 }, (err) => {
+    Player.play(soundFilePath, (err) => {
       if (err) {
         console.error(`Failed to play sound ${soundFilePath}: ${err}`);
       }
