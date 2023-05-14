@@ -38,6 +38,7 @@ module.exports = NodeHelper.create({
     recorder.start();
 
     if (this.config.debug) {
+      console.log(PvRecorder.getAudioDevices());
       console.log(`Using device: ${recorder.getSelectedDevice()}...`);
       console.log(`Listening for wake word: ${this.config.picovoiceWord}`);
     }
