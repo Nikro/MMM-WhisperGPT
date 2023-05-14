@@ -16,6 +16,17 @@ Module.register("MMM-WhisperGPT", {
 	start: function() {
     Log.info("Starting module: " + this.name);
     this.state = 'idle';
+
+    const defaultConfig = {
+      audioDeviceIndex: 0,
+      picovoiceWord: 'JARVIS',
+      picovoiceSilenceTime: 3,
+      picovoiceSilenceThreshold: 600,
+    };
+
+    // Merge default configuration with changed values.
+    this.config = Object.assign({}, defaultConfig, this.config);
+
     this.sendSocketNotification('CONFIG', this.config);
 	},
 
@@ -26,19 +37,15 @@ Module.register("MMM-WhisperGPT", {
     switch(this.state) {
       case 'idle':
         wrapper.innerHTML = "Waiting for trigger word...";
-        // TODO: Display service status indicator
         break;
       case 'listening':
         wrapper.innerHTML = this.triggeredKeyword + ": Listening...";
-        // TODO: Display audio visualization widget
         break;
       case 'processing':
-        wrapper.innerHTML = "Processing...";
-        // TODO: Display processing indicator
+        wrapper.innerHTML = this.triggeredKeyword + ": Processing...";
         break;
       case 'speaking':
         wrapper.innerHTML = this.config.text;
-        // TODO: Display textual reply and start text-to-speech
         break;
       default:
         wrapper.innerHTML = "Unknown state";
@@ -92,6 +99,11 @@ Module.register("MMM-WhisperGPT", {
     else if (notification === 'STOP_RECORDING') {
       Log.info('Recording: stop');
       this.state = 'idle';
+    }
+    else if (notification === 'UPLOAD_WHISPER') {
+      Log.info('Uploading to Whisper');
+      this.state = 'processing';
+      this.uploadToWhisper();
     }
     this.updateDom();
 	},

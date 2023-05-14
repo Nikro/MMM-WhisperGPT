@@ -2,6 +2,10 @@ const NodeHelper = require('node_helper');
 const Log = require("logger");
 const Player = require('play-sound')();
 const path = require('path');
+const fs = require('fs');
+const lame = require('node-lame');
+const { Buffer } = require('buffer');
+const axios = require('axios');
 
 const {
   Porcupine,
@@ -16,15 +20,7 @@ module.exports = NodeHelper.create({
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'CONFIG') {
-      const defaultConfig = {
-        audioDeviceIndex: 0,
-        picovoiceWord: 'JARVIS',
-        picovoiceSilenceTime: 3,
-        picovoiceSilenceThreshold: 600,
-      };
-
-      // Merge default configuration with changed values.
-      this.config = Object.assign({}, defaultConfig, payload);
+      this.config = payload;
 
       // Audio recorder.
       this.setupAudioRecorder();
@@ -32,6 +28,9 @@ module.exports = NodeHelper.create({
       // Set up some paths.
       const modulePath = path.resolve(__dirname);
       this.soundFolder = path.join(modulePath, 'sounds');
+    }
+    else if (notification === 'UPLOAD_WHISPER') {
+      this.uploadToWhisper();
     }
   },
 
@@ -79,6 +78,11 @@ module.exports = NodeHelper.create({
     while (!isInterrupted) {
       const pcm = await recorder.read();
 
+      if (this.isRecording) {
+        this.outputStream.write(Buffer.from(pcm));
+
+      }
+
       // Let's try and detect X seconds of silence.
       const rms = Math.sqrt(pcm.reduce((sum, sample) => sum + sample ** 2, 0) / pcm.length);
       if (rms < silenceThreshold) {
@@ -120,6 +124,9 @@ module.exports = NodeHelper.create({
     this.playSound(this.soundFolder + '/notification_start.mp3');
     this.sendSocketNotification('START_RECORDING');
 
+    this.outputStream = fs.createWriteStream('/tmp/request.wav');
+
+
     // Set the flag.
     this.isRecording = true;
   },
@@ -129,8 +136,68 @@ module.exports = NodeHelper.create({
       this.playSound(this.soundFolder + '/notification_stop.mp3');
       this.sendSocketNotification('STOP_RECORDING');
 
+      // Close the output stream
+      this.outputStream.end(() => {
+        console.log('Recording complete!');
+        // This generates /tmp/request.mp3.
+        this.convertWavToMp3();
+
+        this.sendSocketNotification('UPLOAD_WHISPER');
+      });
+
       // Reset the flag.
       this.isRecording = false;
+    }
+  },
+
+  convertWavToMp3: function() {
+    const encoder = new lame.Encoder({
+      output: '/tmp/request.mp3',
+      bitrate: 192,
+      sampleRate: 44100,
+      channels: 2
+    });
+
+    const inputStream = fs.createReadStream('/tmp/request.wav');
+    const outputStream = fs.createWriteStream('/tmp/request.mp3');
+
+    inputStream.pipe(encoder).pipe(outputStream);
+
+    outputStream.on('finish', () => {
+      console.log('MP3 conversion complete!');
+    });
+  },
+
+  uploadToWhisper: async function() {
+    try {
+      const file = '/tmp/request.mp3';
+
+      const formData = new FormData();
+      formData.append('audio_file', fs.createReadStream(file), {
+        filename: 'request.mp3',
+        contentType: 'audio/mpeg',
+      });
+
+      const response = await axios.post(
+        this.config.whisperUrl,
+        formData,
+        {
+          params: {
+            method: 'openai-whisper',
+            task: 'transcribe',
+            language: 'en',
+            encode: true,
+            output: 'json',
+          },
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      console.log(response.data.text);
+    } catch (error) {
+      console.error('Error uploading file:', error);
     }
   },
 
