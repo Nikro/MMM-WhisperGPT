@@ -47,7 +47,7 @@ module.exports = NodeHelper.create({
 
     const frameLength = porcupine.frameLength;
     const silenceThreshold = this.config.picovoiceSilenceThreshold;
-    const silenceDuration = this.config.picovoiceSilenceTime * 16000;
+    const silenceDuration = this.config.picovoiceSilenceTime * 16000 / frameLength;
     let silenceFrames = 0;
     let isSilenceDetected = false;
 
@@ -91,6 +91,7 @@ module.exports = NodeHelper.create({
       if (silenceFrames >= silenceDuration) {
         if (!isSilenceDetected) {
           console.log("Silence detected...");
+          this.stopRecording();
           isSilenceDetected = true;
         }
         // Perform any action when silence is detected for the specified duration
@@ -103,7 +104,7 @@ module.exports = NodeHelper.create({
       const keywordIndex = porcupine.process(pcm);
       if (keywordIndex >= 0) {
         Log.info('Keyword detected: ' + this.config.picovoiceWord);
-        this.playSound(this.soundFolder + '/notification_start.mp3');
+        this.startRecording();
         this.sendSocketNotification('KEYWORD_DETECTED', this.config.picovoiceWord);
       }
     }
@@ -114,6 +115,17 @@ module.exports = NodeHelper.create({
       recorder.release();
       process.exit();
     });
+  },
+
+  startRecording: function() {
+    this.playSound(this.soundFolder + '/notification_start.mp3');
+    this.sendSocketNotification('START_RECORDING');
+
+  },
+
+  stopRecording: function() {
+    this.playSound(this.soundFolder + '/notification_stop.mp3');
+    this.sendSocketNotification('STOP_RECORDING');
   },
 
   playSound: function playSound(soundFilePath) {

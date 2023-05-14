@@ -83,12 +83,16 @@ Module.register("MMM-WhisperGPT", {
 	socketNotificationReceived: function (notification, payload) {
     if (notification === 'KEYWORD_DETECTED') {
       Log.info('Keyword detected: ', payload);
-      // Here you can trigger any actions you want to perform when a keyword is detected.
-      // This could be sending a notification to another module, updating the UI, etc.
-			// set dataNotification
 			this.triggeredKeyword = payload;
-			this.state = 'listening';
-			this.updateDom();
 		}
+		else if (notification === 'START_RECORDING') {
+      Log.info('Recording: start');
+      this.state = 'listening';
+    }
+    else if (notification === 'STOP_RECORDING') {
+      Log.info('Recording: stop');
+      this.state = 'idle';
+    }
+    this.updateDom();
 	},
 });
