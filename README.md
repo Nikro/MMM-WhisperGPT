@@ -30,7 +30,8 @@ var config = {
                 // See below for configurable options
                 picovoiceKey: 'xxx',
                 picovoiceWord: 'JARVIS',
-                picovoiceSilence: 3,
+                picovoiceSilenceTime: 3,
+                picovoiceSilenceThreshold: 600,
                 audioDeviceIndex: 3,
                 whisperUrl: '192.168.1.5'
             }
@@ -45,7 +46,8 @@ var config = {
 |----------------- |-----------
 | `picovoiceKey`        | *Required* Picovoice access key - you have to register to obtain it - this is used for trigger word.
 | `picovoiceWord`        | *Optional* Picovoice trigger word, i.e. BUMBLEBEE, JARVIS, etc. Defaults to JARVIS.
-| `picovoiceSilence`        | *Optional* Silence period - defaults to 3 (3 seconds).
+| `picovoiceSilenceTime`        | *Optional* Silence period - defaults to 3 (3 seconds).
+| `picovoiceSilenceThreshold`        | *Optional* Silence threshold, my calculations are 500 is roughly enough. Defaults to 600.
 | `audioDeviceIndex`        | *Optional* Audio device - i.e. 3 - those will be printed out when you're using debug mode. Defaults to 0.
 | `whisperUrl`        | *Required* URL (or IP?) to self-hosted instance of the Whisper.
 | `debug`        | *Optional* If you want to debug, default is: false.

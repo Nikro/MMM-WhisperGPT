@@ -19,7 +19,8 @@ module.exports = NodeHelper.create({
       const defaultConfig = {
         audioDeviceIndex: 0,
         picovoiceWord: 'JARVIS',
-        picovoiceSilence: 3,
+        picovoiceSilenceTime: 3,
+        picovoiceSilenceThreshold: 600,
       };
 
       // Merge default configuration with changed values.
@@ -45,8 +46,8 @@ module.exports = NodeHelper.create({
     }
 
     const frameLength = porcupine.frameLength;
-    const silenceThreshold = 0.02;
-    const silenceDuration = this.config.picovoiceSilence * 16000;
+    const silenceThreshold = this.config.picovoiceSilenceThreshold;
+    const silenceDuration = this.config.picovoiceSilenceTime * 16000;
     let silenceFrames = 0;
     let isSilenceDetected = false;
 
