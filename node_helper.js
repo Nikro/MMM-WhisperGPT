@@ -129,6 +129,9 @@ module.exports = NodeHelper.create({
     if (this.isRecording) {
       this.playSound(this.soundFolder + '/notification_stop.mp3');
       this.sendSocketNotification('STOP_RECORDING');
+
+      // Reset the flag.
+      this.isRecording = false;
     }
   },
 
