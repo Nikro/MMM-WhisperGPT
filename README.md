@@ -30,6 +30,7 @@ var config = {
                 // See below for configurable options
                 picovoiceKey: 'xxx',
                 picovoiceWord: 'JARVIS',
+                audioDeviceMic: 'hw:0,0',
                 whisperUrl: '192.168.1.5'
             }
         }
@@ -43,5 +44,6 @@ var config = {
 |----------------- |-----------
 | `picovoiceKey`        | *Required* Picovoice access key - you have to register to obtain it - this is used for trigger word.
 | `picovoiceWord`        | *Required* Picovoice trigger word, i.e. BUMBLEBEE, JARVIS, etc.
+| `audioDeviceMic`        | *Required* Audio device - i.e. hw:0,0 - see [mic](https://www.npmjs.com/package/mic).
 | `whisperUrl`        | *Required* URL (or IP?) to self-hosted instance of the Whisper.
 | `next`        | *Optional* DESCRIPTION HERE TOO <br><br>**Type:** `int`(milliseconds) <br>Default 60000 milliseconds (1 minute)

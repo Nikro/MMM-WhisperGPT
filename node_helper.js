@@ -30,6 +30,7 @@ module.exports = NodeHelper.create({
       rate: '16000',
       channels: '1',
       debug: true,
+      device: this.config.audioDeviceMic,
       fileType: 'wav'
     });
 
