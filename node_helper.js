@@ -6,12 +6,13 @@
  */
 const NodeHelper = require('node_helper');
 const mic = require('mic');
+const Log = require("logger");
+
 const {
   Porcupine,
   BuiltinKeyword,
 } = require("@picovoice/porcupine-node");
 
-const Log = require("logger");
 
 module.exports = NodeHelper.create({
   start: function() {
@@ -52,6 +53,7 @@ module.exports = NodeHelper.create({
 
         const keywordIndex = porcupine.process(frame);
         if (keywordIndex >= 0) {
+          Log.info('Keyword detected: ' + this.config.picovoiceWord);
           this.sendSocketNotification('KEYWORD_DETECTED', keywordIndex);
         }
       }
