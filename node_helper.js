@@ -67,7 +67,7 @@ module.exports = NodeHelper.create({
       if (keywordIndex >= 0) {
         Log.info('Keyword detected: ' + this.config.picovoiceWord);
         this.playSound(this.soundFolder + '/notification_start.mp3');
-        this.sendSocketNotification('KEYWORD_DETECTED', keywordIndex);
+        this.sendSocketNotification('KEYWORD_DETECTED', this.config.picovoiceWord);
       }
     }
 
