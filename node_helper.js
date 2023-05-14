@@ -59,6 +59,10 @@ module.exports = NodeHelper.create({
       }
     });
 
+    // Reset the buffer after processing
+    micInstance.getAudioStream().on('end', () => {
+      buffer = [];
+    });
 
 
     micInstance.start();
