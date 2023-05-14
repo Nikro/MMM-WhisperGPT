@@ -1,9 +1,3 @@
-/* Magic Mirror
- * Node Helper: MMM-WhisperGPT
- *
- * By Sergiu Nagailic
- * MIT Licensed.
- */
 const NodeHelper = require('node_helper');
 const Log = require("logger");
 
@@ -36,7 +30,20 @@ module.exports = NodeHelper.create({
     }
 
     const frameLength = porcupine.frameLength;
-    const recorder = new PvRecorder(this.config.audioDeviceIndex, frameLength);
+
+    // Experimental values for PvRecorder constructor
+    const audioDeviceIndex = this.config.audioDeviceIndex;
+    const bufferSizeMSec = 500; // Experiment with different buffer sizes in milliseconds
+    const logOverflow = false;
+    const logSilence = false;
+
+    const recorder = new PvRecorder(
+      audioDeviceIndex,
+      frameLength,
+      bufferSizeMSec,
+      logOverflow,
+      logSilence
+    );
 
     recorder.start();
 
