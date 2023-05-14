@@ -34,6 +34,12 @@ module.exports = NodeHelper.create({
       fileType: 'wav'
     });
 
+    const porcupine = new Porcupine(
+      this.config.picovoiceKey,
+      [BuiltinKeyword[this.config.picovoiceWord]],
+      [0.65]
+    );
+
     let buffer = [];
     micInstance.getAudioStream().on('data', (data) => {
       // Append new data to the buffer
@@ -51,11 +57,7 @@ module.exports = NodeHelper.create({
       }
     });
 
-    const porcupine = new Porcupine(
-      this.config.picovoiceKey,
-      [BuiltinKeyword[this.config.picovoiceWord]],
-      [0.65]
-    );
+
 
     micInstance.start();
   },
