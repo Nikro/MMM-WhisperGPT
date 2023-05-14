@@ -66,7 +66,6 @@ module.exports = NodeHelper.create({
     );
 
 
-
     recorder.start();
 
     if (this.config.debug) {
@@ -136,7 +135,7 @@ module.exports = NodeHelper.create({
   },
 
   playSound: function playSound(soundFilePath) {
-    Player.play(soundFilePath, (err) => {
+    Player.play(soundFilePath, { timeout: 300 }, (err) => {
       if (err) {
         console.error(`Failed to play sound ${soundFilePath}: ${err}`);
       }
