@@ -1,5 +1,7 @@
 const NodeHelper = require('node_helper');
 const Log = require("logger");
+const Player = require('play-sound').Player;
+const path = require('path');
 
 const {
   Porcupine,
@@ -16,6 +18,10 @@ module.exports = NodeHelper.create({
     if (notification === 'CONFIG') {
       this.config = payload;
       this.setupAudioRecorder();
+      this.player = new Player();
+
+      const modulePath = path.resolve(__dirname);
+      this.soundFolder = path.join(modulePath, 'sounds');
     }
   },
 
@@ -60,6 +66,7 @@ module.exports = NodeHelper.create({
       const keywordIndex = porcupine.process(pcm);
       if (keywordIndex >= 0) {
         Log.info('Keyword detected: ' + this.config.picovoiceWord);
+        this.playSound(this.soundFolder + '/notification_start.mp3');
         this.sendSocketNotification('KEYWORD_DETECTED', keywordIndex);
       }
     }
@@ -71,4 +78,12 @@ module.exports = NodeHelper.create({
       process.exit();
     });
   },
+
+  playSound: function playSound(soundFilePath) {
+    this.player.play(soundFilePath, (err) => {
+      if (err) {
+        console.error(`Failed to play sound: ${err}`);
+      }
+    });
+  }
 });

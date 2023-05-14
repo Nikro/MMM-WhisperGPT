@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@picovoice/porcupine-node": "^2.2.0",
-    "@picovoice/pvrecorder-node": "^1.1.2"
+    "@picovoice/pvrecorder-node": "^1.1.2",
+    "play-sound": "^1.1.5"
   }
 }
