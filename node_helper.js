@@ -33,8 +33,8 @@ module.exports = NodeHelper.create({
 
     const porcupine = new Porcupine(
       this.config.picovoiceKey,
-      [BuiltinKeyword.BUMBLEBEE, BuiltinKeyword.JARVIS],
-      [0.5, 0.65]
+      [BuiltinKeyword[this.config.picovoiceWord]],
+      [0.65]
     );
 
     micInputStream.on('data', (audioFrame) => {

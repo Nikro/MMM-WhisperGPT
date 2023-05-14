@@ -15,6 +15,7 @@ Module.register("MMM-WhisperGPT", {
 
 	start: function() {
     Log.info("Starting module: " + this.name);
+    this.state = 'idle';
     this.sendSocketNotification('CONFIG', this.config);
 	},
 
