@@ -29,8 +29,8 @@ module.exports = NodeHelper.create({
     const micInstance = mic({
       rate: '16000',
       channels: '1',
-      debug: true,
       device: this.config.audioDeviceMic,
+      debug: this.config.debug,
       fileType: 'wav'
     });
 

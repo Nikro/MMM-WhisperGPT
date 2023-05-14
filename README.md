@@ -46,4 +46,4 @@ var config = {
 | `picovoiceWord`        | *Required* Picovoice trigger word, i.e. BUMBLEBEE, JARVIS, etc.
 | `audioDeviceMic`        | *Required* Audio device - i.e. hw:0,0 - see [mic](https://www.npmjs.com/package/mic).
 | `whisperUrl`        | *Required* URL (or IP?) to self-hosted instance of the Whisper.
-| `next`        | *Optional* DESCRIPTION HERE TOO <br><br>**Type:** `int`(milliseconds) <br>Default 60000 milliseconds (1 minute)
+| `debug`        | *Optional* If you want to debug, default is: false.
