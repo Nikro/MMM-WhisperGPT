@@ -15,5 +15,9 @@
     "stylelint": "14.x",
     "stylelint-config-standard": "23.x",
     "time-grunt": "latest"
+  },
+  "dependencies": {
+    "@picovoice/porcupine-node": "^2.2.0",
+    "mic": "^2.1.2"
   }
 }

@@ -6,7 +6,6 @@
  * By Sergiu Nagailic
  * MIT Licensed.
  */
-
 Module.register("MMM-WhisperGPT", {
 	defaults: {
     state: 'idle'
@@ -16,7 +15,7 @@ Module.register("MMM-WhisperGPT", {
 
 	start: function() {
     Log.info("Starting module: " + this.name);
-    this.state = 'idle';
+    this.sendSocketNotification('CONFIG', this.config);
 	},
 
   getDom: function() {
@@ -29,7 +28,7 @@ Module.register("MMM-WhisperGPT", {
         // TODO: Display service status indicator
         break;
       case 'listening':
-        wrapper.innerHTML = "Listening...";
+        wrapper.innerHTML = this.triggeredKeyword + ": Listening...";
         // TODO: Display audio visualization widget
         break;
       case 'processing':
@@ -77,20 +76,18 @@ Module.register("MMM-WhisperGPT", {
 		this.dataRequest = data;
 		if (this.loaded === false) { self.updateDom(self.config.animationSpeed) ; }
 		this.loaded = true;
-
-		// the data if load
-		// send notification to helper
-		this.sendSocketNotification("MMM-WhisperGPT-NOTIFICATION_TEST", data);
 	},
 
 	// socketNotificationReceived from helper
 	socketNotificationReceived: function (notification, payload) {
-		if(notification === "MMM-WhisperGPT-NOTIFICATION_TEST") {
+    if (notification === 'KEYWORD_DETECTED') {
+      Log.info('Keyword detected: ', payload);
+      // Here you can trigger any actions you want to perform when a keyword is detected.
+      // This could be sending a notification to another module, updating the UI, etc.
 			// set dataNotification
-			this.dataNotification = payload;
+			this.triggeredKeyword = payload;
+			this.state = 'listening';
 			this.updateDom();
 		}
 	},
 });
-
-

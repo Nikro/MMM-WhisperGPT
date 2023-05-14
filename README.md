@@ -2,7 +2,21 @@
 
 This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/).
 
-Todo: Insert description here!
+Goal of the module is to create a custom interactive widget that uses Open AI tools:
+
+- Whisper - self-hosted model for voice-to-text transcription.
+- LangChain - intended to be used with ChatGPT API, to process the requests.
+- [Picovoice -> Porcupine](https://picovoice.ai/docs/quick-start/porcupine-nodejs/) - is used for offline (self-hosted) word trigger (accent on the privacy).
+
+Idea is the following:
+
+1. Wake word (Porcupine).
+2. ...record query (show a sexy animation)
+3. ...pass to self-hosted Whisper (details later)
+4. ...transcribe voice-to-text
+5. Show the question as transcribed rendered-text.
+5. ...pass through LangChain to ChatGPT
+6. ...pass the textual reply back to the module and render on-screen (also use text-to-voice, details later)
 
 ## Using the module
 
@@ -14,6 +28,8 @@ var config = {
             module: 'MMM-WhisperGPT',
             config: {
                 // See below for configurable options
+                picovoiceKey: 'xxx',
+                whisperUrl: '192.168.1.5'
             }
         }
     ]
@@ -24,5 +40,6 @@ var config = {
 
 | Option           | Description
 |----------------- |-----------
-| `option1`        | *Required* DESCRIPTION HERE
-| `option2`        | *Optional* DESCRIPTION HERE TOO <br><br>**Type:** `int`(milliseconds) <br>Default 60000 milliseconds (1 minute)
+| `picovoiceKey`        | *Required* Picovoice access key - you have to register to obtain it - this is used for trigger word.
+| `whisperUrl`        | *Required* URL (or IP?) to self-hosted instance of the Whisper.
+| `next`        | *Optional* DESCRIPTION HERE TOO <br><br>**Type:** `int`(milliseconds) <br>Default 60000 milliseconds (1 minute)

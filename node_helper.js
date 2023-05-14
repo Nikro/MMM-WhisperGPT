@@ -4,44 +4,46 @@
  * By Sergiu Nagailic
  * MIT Licensed.
  */
-
-var NodeHelper = require("node_helper");
+const NodeHelper = require('node_helper');
+const mic = require('mic');
+const Porcupine = require("@picovoice/porcupine-node");
+const BuiltinKeyword = Porcupine.BuiltinKeyword;
 
 module.exports = NodeHelper.create({
+  start: function() {
+    console.log("Starting node_helper for: " + this.name);
+  },
 
-	// Override socketNotificationReceived method.
+  socketNotificationReceived: function(notification, payload) {
+    if (notification === 'CONFIG') {
+      this.config = payload;
+      this.setupMic();
+    }
+  },
 
-	/* socketNotificationReceived(notification, payload)
-	 * This method is called when a socket notification arrives.
-	 *
-	 * argument notification string - The identifier of the noitication.
-	 * argument payload mixed - The payload of the notification.
-	 */
-	socketNotificationReceived: function(notification, payload) {
-		if (notification === "MMM-WhisperGPT-NOTIFICATION_TEST") {
-			console.log("Working notification system. Notification:", notification, "payload: ", payload);
-			// Send notification
-			this.sendNotificationTest(this.anotherFunction()); //Is possible send objects :)
-		}
-	},
+  setupMic: function() {
+    const micInstance = mic({
+      rate: '16000',
+      channels: '1',
+      debug: true,
+      fileType: 'wav'
+    });
 
-	// Example function send notification test
-	sendNotificationTest: function(payload) {
-		this.sendSocketNotification("MMM-WhisperGPT-NOTIFICATION_TEST", payload);
-	},
+    const micInputStream = micInstance.getAudioStream();
 
-	// this you can create extra routes for your module
-	extraRoutes: function() {
-		var self = this;
-		this.expressApp.get("/MMM-WhisperGPT/extra_route", function(req, res) {
-			// call another function
-			values = self.anotherFunction();
-			res.send(values);
-		});
-	},
+    const porcupine = new Porcupine(
+      this.config.picovoiceKey,
+      [BuiltinKeyword.BUMBLEBEE, BuiltinKeyword.JARVIS],
+      [0.5, 0.65]
+    );
 
-	// Test another function
-	anotherFunction: function() {
-		return {date: new Date()};
-	}
+    micInputStream.on('data', (audioFrame) => {
+      const keywordIndex = porcupine.process(audioFrame);
+      if (keywordIndex >= 0) {
+        this.sendSocketNotification('KEYWORD_DETECTED', keywordIndex);
+      }
+    });
+
+    micInstance.start();
+  },
 });
