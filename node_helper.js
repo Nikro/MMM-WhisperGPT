@@ -16,8 +16,19 @@ module.exports = NodeHelper.create({
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'CONFIG') {
-      this.config = payload;
+      const defaultConfig = {
+        audioDeviceIndex: 0,
+        picovoiceWord: 'JARVIS',
+        picovoiceSilence: 3,
+      };
+
+      // Merge default configuration with changed values.
+      this.config = Object.assign({}, defaultConfig, payload);
+
+      // Audio recorder.
       this.setupAudioRecorder();
+
+      // Set up some paths.
       const modulePath = path.resolve(__dirname);
       this.soundFolder = path.join(modulePath, 'sounds');
     }
@@ -34,6 +45,10 @@ module.exports = NodeHelper.create({
     }
 
     const frameLength = porcupine.frameLength;
+    const silenceThreshold = 0.02;
+    const silenceDuration = this.config.picovoiceSilence * 16000;
+    let silenceFrames = 0;
+    let isSilenceDetected = false;
 
     // Experimental values for PvRecorder constructor
     const audioDeviceIndex = this.config.audioDeviceIndex;
@@ -49,6 +64,8 @@ module.exports = NodeHelper.create({
       logSilence
     );
 
+
+
     recorder.start();
 
     if (this.config.debug) {
@@ -61,6 +78,27 @@ module.exports = NodeHelper.create({
 
     while (!isInterrupted) {
       const pcm = await recorder.read();
+
+      // Let's try and detect X seconds of silence.
+      const rms = Math.sqrt(pcm.reduce((sum, sample) => sum + sample ** 2, 0) / pcm.length);
+      if (rms < silenceThreshold) {
+        silenceFrames++;
+      } else {
+        silenceFrames = 0;
+      }
+
+      if (silenceFrames >= silenceDuration) {
+        if (!isSilenceDetected) {
+          console.log("Silence detected...");
+          isSilenceDetected = true;
+        }
+        // Perform any action when silence is detected for the specified duration
+        // For example, stop recording, trigger an event, etc.
+      } else {
+        isSilenceDetected = false;
+      }
+
+      // Now try detect trigger-word.
       const keywordIndex = porcupine.process(pcm);
       if (keywordIndex >= 0) {
         Log.info('Keyword detected: ' + this.config.picovoiceWord);
