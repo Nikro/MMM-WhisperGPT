@@ -5,14 +5,13 @@
  * MIT Licensed.
  */
 const NodeHelper = require('node_helper');
-const mic = require('mic');
 const Log = require("logger");
 
 const {
   Porcupine,
   BuiltinKeyword,
 } = require("@picovoice/porcupine-node");
-
+const { PvRecorder } = require("@picovoice/pvrecorder-node");
 
 module.exports = NodeHelper.create({
   start: function() {
@@ -22,49 +21,39 @@ module.exports = NodeHelper.create({
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'CONFIG') {
       this.config = payload;
-      this.setupMic();
+      this.setupAudioRecorder();
     }
   },
 
-  setupMic: function() {
-    const micInstance = mic({
-      rate: '16000',
-      channels: '1',
-      device: this.config.audioDeviceMic,
-      debug: this.config.debug,
-      fileType: 'wav'
-    });
-
+  setupAudioRecorder: function() {
     const porcupine = new Porcupine(
       this.config.picovoiceKey,
       [BuiltinKeyword[this.config.picovoiceWord]],
       [0.65]
     );
 
-    let buffer = [];
-    micInstance.getAudioStream().on('data', (data) => {
-      // Append new data to the buffer
-      buffer = buffer.concat(Array.from(data));
+    const frameLength = porcupine.frameLength;
+    const recorder = new PvRecorder(this.config.audioDeviceIndex, frameLength);
 
-      // If buffer is long enough, process it and remove used data
-      while (buffer.length >= porcupine.frameLength) {
-        const frame = buffer.slice(0, porcupine.frameLength);
-        buffer = buffer.slice(porcupine.frameLength);
+    recorder.start();
 
-        const keywordIndex = porcupine.process(frame);
-        if (keywordIndex >= 0) {
-          Log.info('Keyword detected: ' + this.config.picovoiceWord);
-          this.sendSocketNotification('KEYWORD_DETECTED', keywordIndex);
-        }
+    if (this.config.debug) {
+      console.log(`Using device: ${recorder.getSelectedDevice()}...`);
+      console.log(`Listening for wake word: ${this.config.picovoiceWord}`);
+    }
+
+    recorder.onAudioFrame((pcm) => {
+      const keywordIndex = porcupine.process(pcm);
+      if (keywordIndex >= 0) {
+        Log.info('Keyword detected: ' + this.config.picovoiceWord);
+        this.sendSocketNotification('KEYWORD_DETECTED', keywordIndex);
       }
     });
 
-    // Reset the buffer after processing
-    micInstance.getAudioStream().on('end', () => {
-      buffer = [];
+    // Stop the recorder when the process is interrupted
+    process.on("SIGINT", function () {
+      recorder.release();
+      process.exit();
     });
-
-
-    micInstance.start();
   },
 });

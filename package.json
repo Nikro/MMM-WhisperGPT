@@ -18,6 +18,6 @@
   },
   "dependencies": {
     "@picovoice/porcupine-node": "^2.2.0",
-    "mic": "^2.1.2"
+    "@picovoice/pvrecorder-node": "^1.1.2"
   }
 }
