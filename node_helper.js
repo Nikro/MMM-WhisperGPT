@@ -19,7 +19,7 @@ module.exports = NodeHelper.create({
     }
   },
 
-  setupAudioRecorder: function() {
+  setupAudioRecorder: async function() {
     const porcupine = new Porcupine(
       this.config.picovoiceKey,
       [BuiltinKeyword[this.config.picovoiceWord]],
@@ -52,16 +52,21 @@ module.exports = NodeHelper.create({
       console.log(`Listening for wake word: ${this.config.picovoiceWord}`);
     }
 
-    recorder.onAudioFrame((pcm) => {
+
+    let isInterrupted = false;
+
+    while (!isInterrupted) {
+      const pcm = await recorder.read();
       const keywordIndex = porcupine.process(pcm);
       if (keywordIndex >= 0) {
         Log.info('Keyword detected: ' + this.config.picovoiceWord);
         this.sendSocketNotification('KEYWORD_DETECTED', keywordIndex);
       }
-    });
+    }
 
     // Stop the recorder when the process is interrupted
     process.on("SIGINT", function () {
+      isInterrupted = true;
       recorder.release();
       process.exit();
     });
