@@ -80,7 +80,7 @@ module.exports = NodeHelper.create({
   playSound: function playSound(soundFilePath) {
     Player.play(soundFilePath, (err) => {
       if (err) {
-        console.error(`Failed to play sound: ${err}`);
+        console.error(`Failed to play sound ${soundFilePath}: ${err}`);
       }
     });
   }
