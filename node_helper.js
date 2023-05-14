@@ -1,6 +1,6 @@
 const NodeHelper = require('node_helper');
 const Log = require("logger");
-const Player = require('play-sound').Player;
+const Player = require('play-sound')();
 const path = require('path');
 
 const {
@@ -18,8 +18,6 @@ module.exports = NodeHelper.create({
     if (notification === 'CONFIG') {
       this.config = payload;
       this.setupAudioRecorder();
-      this.player = new Player();
-
       const modulePath = path.resolve(__dirname);
       this.soundFolder = path.join(modulePath, 'sounds');
     }
@@ -80,7 +78,7 @@ module.exports = NodeHelper.create({
   },
 
   playSound: function playSound(soundFilePath) {
-    this.player.play(soundFilePath, (err) => {
+    Player.play(soundFilePath, (err) => {
       if (err) {
         console.error(`Failed to play sound: ${err}`);
       }
