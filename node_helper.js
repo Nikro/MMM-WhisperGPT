@@ -89,7 +89,7 @@ module.exports = NodeHelper.create({
       }
 
       if (silenceFrames >= silenceDuration) {
-        if (!isSilenceDetected) {
+        if (!isSilenceDetected && this.isRecording) {
           console.log("Silence detected...");
           this.stopRecording();
           isSilenceDetected = true;
@@ -121,11 +121,15 @@ module.exports = NodeHelper.create({
     this.playSound(this.soundFolder + '/notification_start.mp3');
     this.sendSocketNotification('START_RECORDING');
 
+    // Set the flag.
+    this.isRecording = true;
   },
 
   stopRecording: function() {
-    this.playSound(this.soundFolder + '/notification_stop.mp3');
-    this.sendSocketNotification('STOP_RECORDING');
+    if (this.isRecording) {
+      this.playSound(this.soundFolder + '/notification_stop.mp3');
+      this.sendSocketNotification('STOP_RECORDING');
+    }
   },
 
   playSound: function playSound(soundFilePath) {
