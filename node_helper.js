@@ -29,10 +29,6 @@ module.exports = NodeHelper.create({
       const modulePath = path.resolve(__dirname);
       this.soundFolder = path.join(modulePath, 'sounds');
     }
-    else if (notification === 'UPLOAD_WHISPER') {
-      console.log('Reached upload.');
-      this.uploadToWhisper();
-    }
   },
 
   setupAudioRecorder: async function() {
@@ -150,7 +146,8 @@ module.exports = NodeHelper.create({
         // This generates /tmp/request.mp3.
         await this.convertWavToMp3();
 
-        this.sendSocketNotification('UPLOAD_WHISPER');
+        // Upload directly.
+        await this.uploadToWhisper();
       });
 
       // Reset the flag.
