@@ -7,6 +7,7 @@ const Lame = require("node-lame").Lame;
 const { Buffer } = require('buffer');
 const axios = require('axios');
 const FormData = require('form-data');
+const wave = require('wavefile');
 
 const {
   Porcupine,
@@ -41,6 +42,7 @@ module.exports = NodeHelper.create({
     if (this.config.debug) {
       console.log(PvRecorder.getAudioDevices());
     }
+    this.audio = [];
 
     const frameLength = porcupine.frameLength;
     const silenceThreshold = this.config.picovoiceSilenceThreshold;
@@ -77,7 +79,7 @@ module.exports = NodeHelper.create({
       const pcm = await recorder.read();
 
       if (this.isRecording) {
-        this.outputStream.write(Buffer.from(pcm.buffer));
+        this.audio.push(...pcm);
       }
 
       // Let's try and detect X seconds of silence.
@@ -123,32 +125,34 @@ module.exports = NodeHelper.create({
 
     // If we're recording, let's stop and clean-up and restart.
     if (this.isRecording) {
-      this.outputStream.end();
+      this.audio = [];
       this.cleanupFiles();
     }
-
-    this.outputStream = fs.createWriteStream('/tmp/request.wav', {flag: 'w'});
 
 
     // Set the flag.
     this.isRecording = true;
   },
 
-  stopRecording: function() {
+  stopRecording: async function() {
     if (this.isRecording) {
       this.playSound(this.soundFolder + '/notification_stop.mp3');
       this.sendSocketNotification('STOP_RECORDING');
 
+      const path = '/tmp/request.wav';
+      const wav = new wave.WaveFile();
+
+      wav.fromScratch(1, 16000, '16', this.audio);
+      fs.writeFileSync(path, wav.toBuffer());
+
       // Close the output stream
-      this.outputStream.end(async () => {
-        console.log('Recording complete!');
+      console.log('Recording complete!');
 
-        // This generates /tmp/request.mp3.
-        await this.convertWavToMp3();
+      // This generates /tmp/request.mp3.
+      await this.convertWavToMp3();
 
-        // Upload directly.
-        await this.uploadToWhisper();
-      });
+      // Upload directly.
+      await this.uploadToWhisper();
 
       // Reset the flag.
       this.isRecording = false;
@@ -211,6 +215,7 @@ module.exports = NodeHelper.create({
   },
 
   cleanupFiles: function() {
+    this.audio = [];
     fs.unlink('/tmp/request.wav', (err) => {
       if (err) {
         console.error('Error deleting file (/tmp/request.wav):', err);
