@@ -3,7 +3,7 @@ const Log = require("logger");
 const Player = require('play-sound')();
 const path = require('path');
 const fs = require('fs');
-const Lame = require('node-lame');
+const Lame = require("node-lame").Lame;
 const { Buffer } = require('buffer');
 const axios = require('axios');
 
