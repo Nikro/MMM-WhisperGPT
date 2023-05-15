@@ -9,6 +9,13 @@ const axios = require('axios');
 const FormData = require('form-data');
 const wave = require('wavefile');
 
+// ChainLang.
+const { ConversationChain } = require("langchain/chains");
+const { ChatOpenAI } = require("langchain/chat_models/openai");
+const {  ChatPromptTemplate,
+  HumanMessagePromptTemplate,
+  SystemMessagePromptTemplate,
+  MessagesPlaceholder } = require("langchain/prompts");
 const {
   Porcupine,
   BuiltinKeyword,
@@ -152,7 +159,9 @@ module.exports = NodeHelper.create({
       await this.convertWavToMp3();
 
       // Upload directly.
-      await this.uploadToWhisper();
+      const requestText = await this.uploadToWhisper();
+
+      await this.getGPTReply(requestText);
 
       // Reset the flag.
       this.isRecording = false;
@@ -221,10 +230,37 @@ module.exports = NodeHelper.create({
 
       // Clean-up
       this.cleanupFiles();
+      this.requestText = response.data.text;
+      return response.data.text;
 
     } catch (error) {
       console.error('Error uploading file:', error);
     }
+  },
+
+  getGPTReply: async function(requestText) {
+    const chat = new ChatOpenAI({ openAIApiKey: this.config.openAiKey, temperature: 0.9 });
+
+    const chatPrompt = ChatPromptTemplate.fromPromptMessages([
+      SystemMessagePromptTemplate.fromTemplate(
+        this.config.openAiSystemMsg
+      ),
+      new MessagesPlaceholder("history"),
+      HumanMessagePromptTemplate.fromTemplate("{input}"),
+    ]);
+
+    const chain = new ConversationChain({
+      memory: new BufferMemory({ returnMessages: true, memoryKey: "history", aiPrefix: this.config.picovoiceWord }),
+      prompt: chatPrompt,
+      llm: chat,
+    });
+    console.log(chain);
+
+    const response = await chain.call({
+      input: requestText,
+    });
+
+    console.log(response);
   },
 
   cleanupFiles: function() {

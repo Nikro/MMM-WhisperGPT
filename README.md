@@ -33,6 +33,8 @@ var config = {
                 picovoiceSilenceTime: 3,
                 picovoiceSilenceThreshold: 600,
                 audioDeviceIndex: 3,
+                openAiKey: 'xxx',
+                openAiSystemMsg: 'xxx',
                 whisperUrl: '192.168.1.5'
             }
         }
@@ -50,6 +52,8 @@ var config = {
 | `picovoiceSilenceThreshold`        | *Optional* Silence threshold, my calculations are 500 is roughly enough. Defaults to 600.
 | `audioDeviceIndex`        | *Optional* Audio device - i.e. 3 - those will be printed out when you're using debug mode. Defaults to 0.
 | `whisperUrl`        | *Required* URL (or IP?) to self-hosted instance of the Whisper.
+| `openAiKey`        | *Required* API Key of OpenAI.
+| `openAiSystemMsg`        | *Required* System msg - how the AI should behave.
 | `debug`        | *Optional* If you want to debug, default is: false.
 
 

@@ -22,6 +22,7 @@ Module.register("MMM-WhisperGPT", {
       picovoiceWord: 'JARVIS',
       picovoiceSilenceTime: 3,
       picovoiceSilenceThreshold: 700,
+      openAiSystemMsg: "The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know."
     };
 
     // Merge default configuration with changed values.
@@ -99,7 +100,7 @@ Module.register("MMM-WhisperGPT", {
     }
     else if (notification === 'STOP_RECORDING') {
       Log.info('Recording: stop');
-      this.state = 'idle';
+      this.state = 'processing';
     }
     else if (notification === 'UPLOAD_WHISPER') {
       Log.info('Uploading to Whisper');
