@@ -103,7 +103,6 @@ Module.register("MMM-WhisperGPT", {
     else if (notification === 'UPLOAD_WHISPER') {
       Log.info('Uploading to Whisper');
       this.state = 'processing';
-      this.uploadToWhisper();
     }
     this.updateDom();
 	},
