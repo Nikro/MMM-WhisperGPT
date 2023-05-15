@@ -247,7 +247,12 @@ module.exports = NodeHelper.create({
   },
 
   getGPTReply: async function(requestText) {
-    const chat = new ChatOpenAI({ openAIApiKey: this.config.openAiKey, temperature: 0.9 });
+    const chat = new ChatOpenAI({
+      openAIApiKey: this.config.openAiKey,
+      temperature: 0.9,
+      modelName: "gpt-3.5-turbo",
+      streaming: false
+    });
 
     const chatPrompt = ChatPromptTemplate.fromPromptMessages([
       SystemMessagePromptTemplate.fromTemplate(
