@@ -77,8 +77,7 @@ module.exports = NodeHelper.create({
       const pcm = await recorder.read();
 
       if (this.isRecording) {
-        this.outputStream.write(Buffer.from(pcm));
-
+        this.outputStream.write(Buffer.from(pcm.buffer));
       }
 
       // Let's try and detect X seconds of silence.
