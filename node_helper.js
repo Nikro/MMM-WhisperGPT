@@ -3,7 +3,7 @@ const Log = require("logger");
 const Player = require('play-sound')();
 const path = require('path');
 const fs = require('fs');
-const lame = require('node-lame');
+const Lame = require('node-lame');
 const { Buffer } = require('buffer');
 const axios = require('axios');
 
@@ -131,7 +131,7 @@ module.exports = NodeHelper.create({
     this.isRecording = true;
   },
 
-  stopRecording: function() {
+  stopRecording: async function() {
     if (this.isRecording) {
       this.playSound(this.soundFolder + '/notification_stop.mp3');
       this.sendSocketNotification('STOP_RECORDING');
@@ -139,8 +139,9 @@ module.exports = NodeHelper.create({
       // Close the output stream
       this.outputStream.end(() => {
         console.log('Recording complete!');
+
         // This generates /tmp/request.mp3.
-        this.convertWavToMp3();
+        await this.convertWavToMp3();
 
         this.sendSocketNotification('UPLOAD_WHISPER');
       });
@@ -151,20 +152,22 @@ module.exports = NodeHelper.create({
   },
 
   convertWavToMp3: function() {
-    const encoder = new lame.Encoder({
-      output: '/tmp/request.mp3',
-      bitrate: 192,
-      sampleRate: 44100,
-      channels: 2
-    });
+    return new Promise((resolve, reject) => {
+      const encoder = new Lame({
+        output: "/tmp/request.mp3",
+        bitrate: 192,
+      }).setFile("/tmp/request.wav");
 
-    const inputStream = fs.createReadStream('/tmp/request.wav');
-    const outputStream = fs.createWriteStream('/tmp/request.mp3');
-
-    inputStream.pipe(encoder).pipe(outputStream);
-
-    outputStream.on('finish', () => {
-      console.log('MP3 conversion complete!');
+      encoder
+        .encode()
+        .then(() => {
+          console.log('MP3 conversion complete!');
+          resolve(); // Resolve the promise when encoding is finished
+        })
+        .catch((error) => {
+          console.log('Something went wrong with MP3 encoding: ' + error);
+          reject(error); // Reject the promise if encoding fails
+        });
     });
   },
 

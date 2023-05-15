@@ -55,4 +55,5 @@ var config = {
 
 ## Troubleshooting
 
-1. If your audio doesn't work - check if you're using alsa or pulseaudio. I had to install mpg123.
+1. If your audio doesn't work - check if you're using alsa or pulseaudio. I had to install `mpg123`.
+2. You might also need to install `lame`.
