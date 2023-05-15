@@ -6,7 +6,8 @@ const fs = require('fs');
 const Lame = require("node-lame").Lame;
 const { Buffer } = require('buffer');
 const axios = require('axios');
-const FormData = require('axios-form-data');
+const FormData = require('form-data');
+
 const {
   Porcupine,
   BuiltinKeyword,
