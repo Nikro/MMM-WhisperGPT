@@ -6,7 +6,7 @@ const fs = require('fs');
 const Lame = require("node-lame").Lame;
 const { Buffer } = require('buffer');
 const axios = require('axios');
-
+const FormData = require('axios-form-data');
 const {
   Porcupine,
   BuiltinKeyword,
@@ -196,9 +196,7 @@ module.exports = NodeHelper.create({
             encode: true,
             output: 'json',
           },
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+          headers: formData.getHeaders(), // Use getHeaders() to set the proper Content-Type header
         }
       );
 
