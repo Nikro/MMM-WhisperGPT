@@ -30,6 +30,7 @@ module.exports = NodeHelper.create({
       this.soundFolder = path.join(modulePath, 'sounds');
     }
     else if (notification === 'UPLOAD_WHISPER') {
+      console.log('Reached upload.');
       this.uploadToWhisper();
     }
   },
