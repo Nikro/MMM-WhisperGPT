@@ -153,6 +153,9 @@ module.exports = NodeHelper.create({
       wav.fromScratch(1, 16000, '16', this.audio);
       fs.writeFileSync(path, wav.toBuffer());
 
+      // Reset the flag.
+      this.isRecording = false;
+
       // Close the output stream
       console.log('Recording complete!');
 
@@ -163,14 +166,13 @@ module.exports = NodeHelper.create({
       const requestText = await this.uploadToWhisper();
 
       try {
-        await this.getGPTReply(requestText);
+        if (requestText.length > 0) {
+          await this.getGPTReply(requestText);
+        }
       }
       catch (e) {
         console.log(e);
       }
-
-      // Reset the flag.
-      this.isRecording = false;
     }
   },
 
@@ -260,7 +262,6 @@ module.exports = NodeHelper.create({
       prompt: chatPrompt,
       llm: chat,
     });
-    console.log(chain);
 
     const response = await chain.call({
       input: requestText,
