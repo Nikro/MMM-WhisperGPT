@@ -21,7 +21,7 @@ Module.register("MMM-WhisperGPT", {
       audioDeviceIndex: 0,
       picovoiceWord: 'JARVIS',
       picovoiceSilenceTime: 3,
-      picovoiceSilenceThreshold: 600,
+      picovoiceSilenceThreshold: 700,
     };
 
     // Merge default configuration with changed values.

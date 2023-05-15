@@ -189,6 +189,18 @@ module.exports = NodeHelper.create({
         contentType: 'audio/mpeg',
       });
 
+      if (this.debug) {
+        console.log('URL:', this.config.whisperUrl);
+        console.log('Params:', {
+          method: 'openai-whisper',
+          task: 'transcribe',
+          language: 'en',
+          encode: true,
+          output: 'json',
+        });
+        console.log('Headers:', formData.getHeaders());
+        console.log('Form:', formData);
+      }
       const response = await axios.post(
         this.config.whisperUrl,
         formData,
