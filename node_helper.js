@@ -137,13 +137,13 @@ module.exports = NodeHelper.create({
     this.isRecording = true;
   },
 
-  stopRecording: async function() {
+  stopRecording: function() {
     if (this.isRecording) {
       this.playSound(this.soundFolder + '/notification_stop.mp3');
       this.sendSocketNotification('STOP_RECORDING');
 
       // Close the output stream
-      this.outputStream.end(() => {
+      this.outputStream.end(async () => {
         console.log('Recording complete!');
 
         // This generates /tmp/request.mp3.
