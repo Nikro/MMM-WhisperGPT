@@ -124,6 +124,12 @@ module.exports = NodeHelper.create({
     this.playSound(this.soundFolder + '/notification_start.mp3');
     this.sendSocketNotification('START_RECORDING');
 
+    // If we're recording, let's stop and clean-up and restart.
+    if (this.isRecording) {
+      this.outputStream.end();
+      this.cleanupFiles();
+    }
+
     this.outputStream = fs.createWriteStream('/tmp/request.wav');
 
 
@@ -201,24 +207,28 @@ module.exports = NodeHelper.create({
       console.log(response.data.text);
 
       // Clean-up
-      fs.unlink('/tmp/request.wav', (err) => {
-        if (err) {
-          console.error('Error deleting file:', err);
-        } else {
-          console.log('File deleted successfully');
-        }
-      });
-      fs.unlink('/tmp/request.mp3', (err) => {
-        if (err) {
-          console.error('Error deleting file:', err);
-        } else {
-          console.log('File deleted successfully');
-        }
-      });
+      this.cleanupFiles();
 
     } catch (error) {
       console.error('Error uploading file:', error);
     }
+  },
+
+  cleanupFiles: function() {
+    fs.unlink('/tmp/request.wav', (err) => {
+      if (err) {
+        console.error('Error deleting file (/tmp/request.wav):', err);
+      } else {
+        console.log('File deleted successfully: /tmp/request.wav');
+      }
+    });
+    fs.unlink('/tmp/request.mp3', (err) => {
+      if (err) {
+        console.error('Error deleting file (/tmp/request.mp3):', err);
+      } else {
+        console.log('File deleted successfully: /tmp/request.mp3');
+      }
+    });
   },
 
   playSound: function playSound(soundFilePath) {
