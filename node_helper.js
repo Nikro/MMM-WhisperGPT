@@ -189,7 +189,7 @@ module.exports = NodeHelper.create({
         contentType: 'audio/mpeg',
       });
 
-      if (this.debug) {
+      if (this.config.debug) {
         console.log('URL:', this.config.whisperUrl);
         console.log('Params:', {
           method: 'openai-whisper',
@@ -212,11 +212,12 @@ module.exports = NodeHelper.create({
             encode: true,
             output: 'json',
           },
-          headers: formData.getHeaders(), // Use getHeaders() to set the proper Content-Type header
+          headers: formData.getHeaders(),
         }
       );
 
-      console.log(response.data.text);
+
+      this.sendSocketNotification('REQUEST_PROCESSED', response.data.text);
 
       // Clean-up
       this.cleanupFiles();

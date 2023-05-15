@@ -44,8 +44,9 @@ Module.register("MMM-WhisperGPT", {
       case 'processing':
         wrapper.innerHTML = this.triggeredKeyword + ": Processing...";
         break;
-      case 'speaking':
-        wrapper.innerHTML = this.config.text;
+      case 'request_received':
+        wrapper.innerHTML = '<div>' + this.triggeredKeyword + ": Processing..." + '</div>';
+        wrapper.innerHTML = '<div><span class="">Request: </span>' + this.requestText + '</div>';
         break;
       default:
         wrapper.innerHTML = "Unknown state";
@@ -103,6 +104,11 @@ Module.register("MMM-WhisperGPT", {
     else if (notification === 'UPLOAD_WHISPER') {
       Log.info('Uploading to Whisper');
       this.state = 'processing';
+    }
+    else if (notification === 'REQUEST_PROCESSED') {
+      Log.info('Text: ' + payload);
+      this.state = 'request_received';
+      this.requestText = payload;
     }
     this.updateDom();
 	},
