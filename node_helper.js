@@ -127,7 +127,7 @@ module.exports = NodeHelper.create({
       this.cleanupFiles();
     }
 
-    this.outputStream = fs.createWriteStream('/tmp/request.wav');
+    this.outputStream = fs.createWriteStream('/tmp/request.wav', {flag: 'w'});
 
 
     // Set the flag.
