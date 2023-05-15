@@ -46,7 +46,7 @@ Module.register("MMM-WhisperGPT", {
         break;
       case 'request_received':
         wrapper.innerHTML = '<div>' + this.triggeredKeyword + ": Processing..." + '</div>';
-        wrapper.innerHTML = '<div><span class="">Request: </span>' + this.requestText + '</div>';
+        wrapper.innerHTML = '<div><span class="bright">Request: </span>' + this.requestText + '</div>';
         break;
       default:
         wrapper.innerHTML = "Unknown state";
