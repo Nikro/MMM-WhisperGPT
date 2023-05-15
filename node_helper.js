@@ -12,6 +12,7 @@ const wave = require('wavefile');
 // ChainLang.
 const { ConversationChain } = require("langchain/chains");
 const { ChatOpenAI } = require("langchain/chat_models/openai");
+const { BufferMemory } = require("langchain/memory");
 const {  ChatPromptTemplate,
   HumanMessagePromptTemplate,
   SystemMessagePromptTemplate,
@@ -161,7 +162,12 @@ module.exports = NodeHelper.create({
       // Upload directly.
       const requestText = await this.uploadToWhisper();
 
-      await this.getGPTReply(requestText);
+      try {
+        await this.getGPTReply(requestText);
+      }
+      catch (e) {
+        console.log(e);
+      }
 
       // Reset the flag.
       this.isRecording = false;
