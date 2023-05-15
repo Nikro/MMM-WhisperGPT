@@ -199,6 +199,23 @@ module.exports = NodeHelper.create({
       );
 
       console.log(response.data.text);
+
+      // Clean-up
+      fs.unlink('/tmp/request.wav', (err) => {
+        if (err) {
+          console.error('Error deleting file:', err);
+        } else {
+          console.log('File deleted successfully');
+        }
+      });
+      fs.unlink('/tmp/request.mp3', (err) => {
+        if (err) {
+          console.error('Error deleting file:', err);
+        } else {
+          console.log('File deleted successfully');
+        }
+      });
+
     } catch (error) {
       console.error('Error uploading file:', error);
     }
