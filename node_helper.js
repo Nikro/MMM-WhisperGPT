@@ -263,10 +263,10 @@ module.exports = NodeHelper.create({
       llm: chat,
     });
 
+    console.log('Sending request to OpenAPI: ' + requestText);
     const response = await chain.call({
       input: requestText,
     });
-
     console.log(response);
   },
 
