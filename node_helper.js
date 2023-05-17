@@ -1,6 +1,7 @@
 const NodeHelper = require('node_helper');
 const Log = require("logger");
-const Player = require('play-sound')();
+const PlayerMP3 = require('play-sound')(opts = { player: "mpg123" });
+const PlayerWav = require('play-sound')(opts = { player: "aplay" });
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
@@ -224,13 +225,8 @@ module.exports = NodeHelper.create({
         writer.on('finish', () => {
           // Play the saved audio file
           console.log('Finish event fired.');
-          Player.play(tempFilePath, function(err){
-            // if (err) throw err
-            // // Delete the file after it's done playing
-            // fs.unlink(tempFilePath, (err) => {
-            //   if (err) throw err;
-            //   console.log('File was deleted');
-            // });
+          PlayerWav.play(tempFilePath, function(err){
+            console.log(err);
           });
         });
       })
@@ -352,7 +348,7 @@ module.exports = NodeHelper.create({
   },
 
   playSound: function playSound(soundFilePath) {
-    Player.play(soundFilePath, (err) => {
+    PlayerMP3.play(soundFilePath, (err) => {
       if (err) {
         console.error(`Failed to play sound ${soundFilePath}: ${err}`);
       }
