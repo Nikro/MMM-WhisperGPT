@@ -9,6 +9,7 @@ const { Buffer } = require('buffer');
 const axios = require('axios');
 const FormData = require('form-data');
 const wave = require('wavefile');
+const querystring = require('querystring');
 
 // ChainLang.
 const { ConversationChain } = require("langchain/chains");
