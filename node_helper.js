@@ -3,6 +3,7 @@ const Log = require("logger");
 const Player = require('play-sound')();
 const path = require('path');
 const fs = require('fs');
+const url = require('url');
 const Lame = require("node-lame").Lame;
 const { Buffer } = require('buffer');
 const axios = require('axios');
@@ -165,15 +166,64 @@ module.exports = NodeHelper.create({
       // Upload directly.
       const requestText = await this.uploadToWhisper();
 
-      try {
-        if (requestText.length > 0) {
-          await this.getGPTReply(requestText);
+      if (requestText.includes('command')) {
+        this.processCommand(requestText);
+      }
+      else {
+        try {
+          if (requestText.length > 0) {
+            const reply = await this.getGPTReply(requestText);
+            this.ttsPlay(reply);
+          }
+        }
+        catch (e) {
+          console.log(e);
         }
       }
-      catch (e) {
-        console.log(e);
-      }
     }
+  },
+
+  ttsPlay: function(text) {
+    let params = {
+      voice: this.config.mimic3Voice,
+      noiseScale: 0.2,
+      noiseW: 0.2,
+      lengthScale: 1.0,
+      ssml: true
+    };
+
+    let parsedUrl = url.parse(this.mimic3Url, true);
+    parsedUrl.pathname = '/api/tts';
+    parsedUrl.query = params;
+    const apiUrl = url.format(parsedUrl);
+
+    axios({
+      method: 'post',
+      url: apiUrl,
+      headers: {'Content-Type': 'text/plain'},
+      data: text,
+      responseType: 'stream'
+    })
+      .then(function (response) {
+        // Save the response to a temporary file
+        const tempFilePath = '/tmp/gpt-reply.wav';
+        const writer = fs.createWriteStream(tempFilePath);
+        response.data.pipe(writer);
+        writer.on('finish', () => {
+          // Play the saved audio file
+          Player.play(tempFilePath, function(err){
+            if (err) throw err
+            // Delete the file after it's done playing
+            fs.unlink(tempFilePath, (err) => {
+              if (err) throw err;
+              console.log('File was deleted');
+            });
+          });
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   },
 
   convertWavToMp3: function() {
@@ -206,18 +256,6 @@ module.exports = NodeHelper.create({
         contentType: 'audio/mpeg',
       });
 
-      if (this.config.debug) {
-        console.log('URL:', this.config.whisperUrl);
-        console.log('Params:', {
-          method: 'openai-whisper',
-          task: 'transcribe',
-          language: 'en',
-          encode: true,
-          output: 'json',
-        });
-        console.log('Headers:', formData.getHeaders());
-        console.log('Form:', formData);
-      }
       const response = await axios.post(
         this.config.whisperUrl,
         formData,
@@ -232,7 +270,6 @@ module.exports = NodeHelper.create({
           headers: formData.getHeaders(),
         }
       );
-
 
       this.sendSocketNotification('REQUEST_PROCESSED', response.data.text);
 
@@ -272,7 +309,15 @@ module.exports = NodeHelper.create({
     const response = await chain.call({
       input: requestText,
     });
+    console.log('OpenAI Response:');
     console.log(response);
+    this.sendSocketNotification('REPLY_RECEIVED', response.response);
+
+    return response.response;
+  },
+
+  processCommand: function() {
+
   },
 
   cleanupFiles: function() {

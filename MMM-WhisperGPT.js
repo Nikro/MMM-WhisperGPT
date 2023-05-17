@@ -22,6 +22,8 @@ Module.register("MMM-WhisperGPT", {
       picovoiceWord: 'JARVIS',
       picovoiceSilenceTime: 3,
       picovoiceSilenceThreshold: 700,
+      mimic3Url: '',
+      mimic3Voice: 'en_US/cmu-arctic_low%23gka',
       openAiSystemMsg: "The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know."
     };
 
@@ -48,6 +50,12 @@ Module.register("MMM-WhisperGPT", {
       case 'request_received':
         wrapper.innerHTML = '<div>' + this.triggeredKeyword + ": Processing..." + '</div>';
         wrapper.innerHTML += '<div><span class="bright">Request: </span>' + this.requestText + '</div>';
+        break;
+      case 'reply_received':
+        wrapper.innerHTML = '<div><span class="bright">Reply: </span>' + this.replyText + '</div>';
+
+        // Reset state in 10 seconds.
+        setTimeout(this.resetState.bind(this), 10 * 1000);
         break;
       default:
         wrapper.innerHTML = "Unknown state";
@@ -111,6 +119,30 @@ Module.register("MMM-WhisperGPT", {
       this.state = 'request_received';
       this.requestText = payload;
     }
+    else if (notification === 'REPLY_RECEIVED') {
+      Log.info('Reply: ' + payload);
+      this.state = 'reply_received';
+      this.replyText = payload;
+
+      const notification = {
+        module: 'alert',
+        notification: 'SHOW_ALERT',
+        payload: {
+          message: '<span class="bright">Reply:</span> ' + payload,
+          title: `${this.config.picovoiceWord } Replied...`,
+          imageFA: 'robot',
+          timer: 10 * 1000
+        }
+      };
+      this.sendNotification(notification);
+    }
     this.updateDom();
 	},
+
+  resetState: function() {
+	  this.state = 'idle';
+	  this.requestText = '';
+	  this.replyText = '';
+
+  }
 });
