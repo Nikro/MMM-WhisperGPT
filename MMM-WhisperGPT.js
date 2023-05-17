@@ -23,7 +23,7 @@ Module.register("MMM-WhisperGPT", {
       picovoiceSilenceTime: 3,
       picovoiceSilenceThreshold: 700,
       mimic3Url: '',
-      mimic3Voice: 'en_US/cmu-arctic_low%23gka',
+      mimic3Voice: 'en_US/cmu-arctic_low#gka',
       openAiSystemMsg: "The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know."
     };
 
@@ -128,7 +128,7 @@ Module.register("MMM-WhisperGPT", {
         message: '<span class="bright">Reply:</span> ' + payload,
         title: `${this.config.picovoiceWord } Replied...`,
         imageFA: 'robot',
-        timer: 10 * 1000
+        timer: 15 * 1000
       };
       this.sendNotification("SHOW_ALERT", notification);
     }

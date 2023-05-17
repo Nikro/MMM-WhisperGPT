@@ -9,6 +9,7 @@ const { Buffer } = require('buffer');
 const axios = require('axios');
 const FormData = require('form-data');
 const wave = require('wavefile');
+const stripHtml = require("string-strip-html");
 
 // ChainLang.
 const { ConversationChain } = require("langchain/chains");
@@ -195,7 +196,7 @@ module.exports = NodeHelper.create({
     let parsedUrl = url.parse(this.config.mimic3Url, true);
     parsedUrl.pathname = '/api/tts';
     parsedUrl.query = params;
-    const apiUrl = url.format(parsedUrl);
+    const apiUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}:${parsedUrl.port}/api/tts?${querystring.stringify(params)}`;
 
     axios({
       method: 'post',
@@ -311,7 +312,7 @@ module.exports = NodeHelper.create({
     });
     console.log('OpenAI Response:');
     console.log(response);
-    this.sendSocketNotification('REPLY_RECEIVED', response.response);
+    this.sendSocketNotification('REPLY_RECEIVED', stripHtml(response.response));
 
     return response.response;
   },
