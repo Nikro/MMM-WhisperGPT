@@ -192,7 +192,7 @@ module.exports = NodeHelper.create({
       ssml: true
     };
 
-    let parsedUrl = url.parse(this.mimic3Url, true);
+    let parsedUrl = url.parse(this.config.mimic3Url, true);
     parsedUrl.pathname = '/api/tts';
     parsedUrl.query = params;
     const apiUrl = url.format(parsedUrl);

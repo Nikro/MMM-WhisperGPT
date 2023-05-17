@@ -125,16 +125,12 @@ Module.register("MMM-WhisperGPT", {
       this.replyText = payload;
 
       const notification = {
-        module: 'alert',
-        notification: 'SHOW_ALERT',
-        payload: {
-          message: '<span class="bright">Reply:</span> ' + payload,
-          title: `${this.config.picovoiceWord } Replied...`,
-          imageFA: 'robot',
-          timer: 10 * 1000
-        }
+        message: '<span class="bright">Reply:</span> ' + payload,
+        title: `${this.config.picovoiceWord } Replied...`,
+        imageFA: 'robot',
+        timer: 10 * 1000
       };
-      this.sendNotification(notification);
+      this.sendNotification("SHOW_ALERT", notification);
     }
     this.updateDom();
 	},
@@ -143,6 +139,6 @@ Module.register("MMM-WhisperGPT", {
 	  this.state = 'idle';
 	  this.requestText = '';
 	  this.replyText = '';
-
+    this.updateDom();
   }
 });
