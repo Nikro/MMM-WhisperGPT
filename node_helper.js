@@ -41,6 +41,7 @@ module.exports = NodeHelper.create({
       // Set up some paths.
       const modulePath = path.resolve(__dirname);
       this.soundFolder = path.join(modulePath, 'sounds');
+      this.chain = this.initGPT();
     }
   },
 
@@ -292,7 +293,7 @@ module.exports = NodeHelper.create({
     }
   },
 
-  getGPTReply: async function(requestText) {
+  initGPT: function () {
     const chat = new ChatOpenAI({
       openAIApiKey: this.config.openAiKey,
       temperature: 0.9,
@@ -308,14 +309,16 @@ module.exports = NodeHelper.create({
       HumanMessagePromptTemplate.fromTemplate("{input}"),
     ]);
 
-    const chain = new ConversationChain({
+    return new ConversationChain({
       memory: new BufferMemory({ returnMessages: true, memoryKey: "history", aiPrefix: this.config.picovoiceWord }),
       prompt: chatPrompt,
       llm: chat,
     });
+  },
 
+  getGPTReply: async function(requestText) {
     console.log('Sending request to OpenAPI: ' + requestText);
-    const response = await chain.call({
+    const response = await this.chain.call({
       input: requestText,
     });
     console.log('OpenAI Response:');
