@@ -312,7 +312,7 @@ module.exports = NodeHelper.create({
     });
     console.log('OpenAI Response:');
     console.log(response);
-    this.sendSocketNotification('REPLY_RECEIVED', stripHtml(response.response));
+    this.sendSocketNotification('REPLY_RECEIVED', stripHtml(response.response).result);
 
     return response.response;
   },
