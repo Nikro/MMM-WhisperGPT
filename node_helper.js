@@ -210,8 +210,20 @@ module.exports = NodeHelper.create({
         const tempFilePath = '/tmp/gpt-reply.wav';
         const writer = fs.createWriteStream(tempFilePath);
         response.data.pipe(writer);
+        writer.on('error', (error) => {
+          console.error('Error occurred:', error);
+        });
+
+        response.data.on('end', () => {
+          console.log('No more data in response.');
+        });
+
+        writer.on('finish', () => {
+          console.log('Finish event fired.');
+        });
         writer.on('finish', () => {
           // Play the saved audio file
+          console.log('Finish event fired.');
           Player.play(tempFilePath, function(err){
             // if (err) throw err
             // // Delete the file after it's done playing
