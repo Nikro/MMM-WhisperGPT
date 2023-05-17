@@ -213,12 +213,12 @@ module.exports = NodeHelper.create({
         writer.on('finish', () => {
           // Play the saved audio file
           Player.play(tempFilePath, function(err){
-            if (err) throw err
-            // Delete the file after it's done playing
-            fs.unlink(tempFilePath, (err) => {
-              if (err) throw err;
-              console.log('File was deleted');
-            });
+            // if (err) throw err
+            // // Delete the file after it's done playing
+            // fs.unlink(tempFilePath, (err) => {
+            //   if (err) throw err;
+            //   console.log('File was deleted');
+            // });
           });
         });
       })
