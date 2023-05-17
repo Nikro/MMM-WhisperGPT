@@ -55,7 +55,7 @@ Module.register("MMM-WhisperGPT", {
         wrapper.innerHTML = '<div><span class="bright">Reply: </span>' + this.replyText + '</div>';
 
         // Reset state in 10 seconds.
-        setTimeout(this.resetState.bind(this), 10 * 1000);
+        setTimeout(this.resetState.bind(this), 30 * 1000);
         break;
       default:
         wrapper.innerHTML = "Unknown state";
