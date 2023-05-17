@@ -9,7 +9,6 @@ const { Buffer } = require('buffer');
 const axios = require('axios');
 const FormData = require('form-data');
 const wave = require('wavefile');
-const stripHtml = require("string-strip-html");
 
 // ChainLang.
 const { ConversationChain } = require("langchain/chains");
@@ -312,7 +311,7 @@ module.exports = NodeHelper.create({
     });
     console.log('OpenAI Response:');
     console.log(response);
-    this.sendSocketNotification('REPLY_RECEIVED', stripHtml(response.response).result);
+    this.sendSocketNotification('REPLY_RECEIVED', response.response);
 
     return response.response;
   },
