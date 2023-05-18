@@ -18,19 +18,32 @@ Module.register("MMM-WhisperGPT", {
     this.state = 'idle';
 
     const defaultConfig = {
-      audioDeviceIndex: 0,
+      picovoiceKey: '',
       picovoiceWord: 'JARVIS',
       picovoiceSilenceTime: 3,
       picovoiceSilenceThreshold: 700,
+      audioDeviceIndex: 0,
+      whisperUrl: '',
+      whisperLanguage: 'en',
+      whisperMethod: 'faster-whisper',
       mimic3Url: '',
       mimic3Voice: 'en_US/cmu-arctic_low#gka',
+      openAiKey: '',
       openAiSystemMsg: "The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know."
+      debug: false
     };
 
     // Merge default configuration with changed values.
     this.config = Object.assign({}, defaultConfig, this.config);
 
-    this.sendSocketNotification('CONFIG', this.config);
+    // Check if required things are set.
+    if (!this.config.picovoiceKey || !this.config.whisperUrl || !this.config.mimic3Url || !this.config.openAIApiKey) {
+      this.state = 'config_issue';
+    }
+    else {
+      this.sendSocketNotification('CONFIG', this.config);
+
+    }
 	},
 
   getDom: function() {
@@ -38,6 +51,9 @@ Module.register("MMM-WhisperGPT", {
 
     // State-based UI rendering
     switch(this.state) {
+      case 'config_issue':
+        wrapper.innerHTML = "Please supply configs...";
+        break;
       case 'idle':
         wrapper.innerHTML = "Waiting for trigger word...";
         break;

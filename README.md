@@ -7,16 +7,18 @@ Goal of the module is to create a custom interactive widget that uses Open AI to
 - Whisper - self-hosted model for voice-to-text transcription.
 - LangChain - intended to be used with ChatGPT API, to process the requests.
 - [Picovoice -> Porcupine](https://picovoice.ai/docs/quick-start/porcupine-nodejs/) - is used for offline (self-hosted) word trigger (accent on the privacy).
+- also... mimic3 :)
 
 Idea is the following:
 
 1. Wake word (Porcupine).
-2. ...record query (show a sexy animation)
-3. ...pass to self-hosted Whisper (details later)
+2. ...record query (show a sexy animation, will be done later)
+3. ...pass to self-hosted Whisper
 4. ...transcribe voice-to-text
-5. Show the question as transcribed rendered-text.
+5. Show the question as transcribed rendered-text (in the module render)
 5. ...pass through LangChain to ChatGPT
-6. ...pass the textual reply back to the module and render on-screen (also use text-to-voice, details later)
+6. ...pass the textual reply back to the module and render on-screen 
+7. ...use TTS (mimic3) - self-hosted on the network, to throw back a wav file to play.
 
 ## Using the module
 
@@ -35,7 +37,9 @@ var config = {
                 audioDeviceIndex: 3,
                 openAiKey: 'xxx',
                 openAiSystemMsg: 'xxx',
-                whisperUrl: '192.168.1.5'
+                whisperUrl: '192.168.1.5:9000/asr',
+                whisperMethod: 'openai-whisper',
+                mimic3Url: '192.168.1.6:59125'
             }
         }
     ]
@@ -44,51 +48,56 @@ var config = {
 
 ## Configuration options
 
-| Option           | Description
-|----------------- |-----------
-| `picovoiceKey`                    | *Required* Picovoice access key - you have to register to obtain it - this is used for trigger word.
-| `picovoiceWord`                   | *Optional* Picovoice trigger word, i.e. BUMBLEBEE, JARVIS, etc. Defaults to JARVIS.
-| `picovoiceSilenceTime`            | *Optional* Silence period - defaults to 3 (3 seconds).
-| `picovoiceSilenceThreshold`       | *Optional* Silence threshold, my calculations are 500 is roughly enough. Defaults to 600.
-| `audioDeviceIndex`                | *Optional* Audio device - i.e. 3 - those will be printed out when you're using debug mode. Defaults to 0.
-| `whisperUrl`                      | *Required* URL (or IP?) to self-hosted instance of the Whisper.
-| `openAiKey`                       | *Required* API Key of OpenAI.
-| `openAiSystemMsg`                 | *Required* System msg - how the AI should behave.
-| `mimic3Url`                       | *Required* Mimic3 URL (server), with protocol, port, without /api/tts
-| `mimic3Voice`                     | *Optional* Mimic3 Voice - default: en_US/cmu-arctic_low%23gka
-| `debug`                           | *Optional* If you want to debug, default is: false.
+| Option                            | Required?   | Description    
+|---------------------------------- |-------------|-----------
+| `picovoiceKey`                    | **Required** | Picovoice access key - you have to register to obtain it - this is used for trigger word.
+| `picovoiceWord`                   | *Optional* | Picovoice trigger word, i.e. BUMBLEBEE, JARVIS, etc. Defaults to JARVIS.
+| `picovoiceSilenceTime`            | *Optional* | Silence period - defaults to 3 (3 seconds).
+| `picovoiceSilenceThreshold`       | *Optional* | Silence threshold, my calculations are 500 is roughly enough. Defaults to 600.
+| `audioDeviceIndex`                | *Optional* | Audio device - i.e. 3 - those will be printed out when you're using debug mode. Defaults to 0.
+| `whisperUrl`                      | **Required** | URL (or IP?) to self-hosted instance of the Whisper.
+| `whisperMethod`                   | *Optional* | Whisper method: openai-whisper or faster-whisper. Defaults to: faster-whisper.
+| `whisperLanguage`                 | *Optional* | Defaults to: en.
+| `openAiKey`                       | **Required** | API Key of OpenAI.
+| `openAiSystemMsg`                 | *Optional* | System msg - how the AI should behave.
+| `mimic3Url`                       | **Required** | Mimic3 URL (server), with protocol, port, without /api/tts
+| `mimic3Voice`                     | *Optional* | Mimic3 Voice - default: en_US/cmu-arctic_low%23gka
+| `debug`                           | *Optional* | If you want to debug, default is: false.
 
 
-## What is PicVoice / Porcupine
-It's used for "Trigger" word. It's a self-hosted small AI / Neural Network (NN).
-
-PicoVoice offers a range of services, they do offer a license for this offline AI, it just sends usage statistics (not the actual audio conversations).
+## What is Picovoice / Porcupine
+[Picovoice](https://picovoice.ai/) / [Porcupine](https://picovoice.ai/products/porcupine/) is used for the "Trigger" word. It's a self-hosted small AI / Neural Network (NN). Picovoice offers a range of services, including a license for this offline AI. It only sends usage statistics, not the actual audio conversations.
 
 ## What is Whisper
-It's OpenAI's product (LLM AI), open-sourced. It handles speech-to-text (transcription). In my personal case, I have it on my local network, self-hosted.
+[Whisper](https://github.com/openai/whisper) is an open-source product from OpenAI. It's a Large Language Model (LLM) AI that handles speech-to-text (transcription). In my personal case, I have it self-hosted on my local network. 
+
+I used this: https://github.com/ahmetoner/whisper-asr-webservice
 
 ## What is ChatGPT
-It's OpenAI's product - LLM AI. You will need to register and get API Key.
+[ChatGPT](https://openai.com/product/chatgpt) is another product from OpenAI. It's a Large Language Model (LLM) AI. You will need to register and get an API Key to use it.
 
 ## What is LangChain
-It's a library around LLMs that allows for extra functionality, i.e. long-term memory.
+[LangChain](https://js.langchain.com/) is a library built around LLMs that allows for extra functionality, such as long-term memory.
 
 ## What is Mimic3 (Mycroft)
-[Mycroft's Mimic3](https://mycroft-ai.gitbook.io/docs/mycroft-technologies/mimic-tts/mimic-3) -  is a TTS (text-to-speech) based on an LLM (another NN). It offers realistic TTS that runs on somewhat restricted ressource-systems.
+[Mycroft's Mimic3](https://mycroft-ai.gitbook.io/docs/mycroft-technologies/mimic-tts/mimic-3) is a Text-to-Speech (TTS) system based on a Large Language Model (LLM). It offers realistic TTS that can run on somewhat resource-restricted systems. I initially tried to set it up on my OrangePi, but instead, I installed it on the same machine with Whisper and use it via the network.
 
-It was VERY hard for me to set it up, you'll need:
+I used this docker-compose.yml 😉
 
-- ONNXRUNTIME - and it has to be compiled - here's how I did it (there's also a python WHEEL) - https://github.com/Nikro/onnxruntime-arm32v7-docker
-- CMAKE - newer version of CMAKE also needs to be compiled for ONNXRUNTIME. I did a compilation for arm32v7 - https://gist.github.com/Nikro/b38e915d3fb356972808f6f74e1576fb#comments
-- After having ONNXRUNTIME running on OrangePI, I had to build mimic3 - and it relied on some other stuff:
+```yaml
+version: '3.7'
 
-  - Install python3.9 (or higher) and make it default
-  - Install cython: `pip install cython`
-  - I had to manually install this: https://github.com/roy-ht/editdistance/ - clone and (after activating venv like mimic3 install says) - run: `python3 setup.py` and later `python3 setup.py install`.
-  - Then continue with mimic3
-
+services:
+  mimic3:
+    image: mycroftai/mimic3
+    ports:
+      - 59125:59125
+    volumes:
+      - .:/home/mimic3/.local/share/mycroft/mimic3
+    stdin_open: true
+    tty: true
+```
 
 ## Troubleshooting
-
-1. If your audio doesn't work - check if you're using alsa or pulseaudio. I had to install `mpg123`.
-2. You might also need to install `lame`.
+1. If your audio doesn't work - check if you're using [alsa](https://www.alsa-project.org/main/index.php/Main_Page) or [pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/). You might need to install `mpg123`. You can install it using the command `sudo apt-get install mpg123`.
+2. You might also need to install `lame` for audio encoding. You can install it using the command `sudo apt-get install lame`.

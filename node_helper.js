@@ -271,9 +271,9 @@ module.exports = NodeHelper.create({
         formData,
         {
           params: {
-            method: 'openai-whisper',
+            method: this.config.whisperMethod,
             task: 'transcribe',
-            language: 'en',
+            language: this.config.whisperLanguage,
             encode: true,
             output: 'json',
           },
