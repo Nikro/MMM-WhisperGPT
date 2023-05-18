@@ -37,7 +37,7 @@ Module.register("MMM-WhisperGPT", {
     this.config = Object.assign({}, defaultConfig, this.config);
 
     // Check if required things are set.
-    if (!this.config.picovoiceKey || !this.config.whisperUrl || !this.config.mimic3Url || !this.config.openAIApiKey) {
+    if (!this.config.picovoiceKey || !this.config.whisperUrl || !this.config.mimic3Url || !this.config.openAiKey) {
       this.state = 'config_issue';
     }
     else {
