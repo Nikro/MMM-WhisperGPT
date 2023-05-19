@@ -169,8 +169,6 @@ startRecording: function() {
     }
 
     if (this.player !== false) {
-      Log.info('- Killing audio -');
-      console.log(this.player);
       this.player.kill('SIGINT');
       this.player = false;
     }
@@ -395,7 +393,6 @@ startRecording: function() {
 
   playSound: function playSound(soundFilePath) {
     if (this.player !== false) {
-      Log.info('- Killing audio -');
       this.player.kill('SIGINT');
       this.player = false;
     }
