@@ -36,6 +36,9 @@ module.exports = NodeHelper.create({
     if (notification === 'CONFIG') {
       this.config = payload;
 
+      // Can be: idle, recording, processing.
+      this.state = 'idle';
+
       // Audio recorder.
       this.setupAudioRecorder();
 
@@ -91,7 +94,7 @@ module.exports = NodeHelper.create({
     while (!isInterrupted) {
       const pcm = await recorder.read();
 
-      if (this.isRecording) {
+      if (this.state === 'recording') {
         this.audio.push(...pcm);
       }
 
@@ -104,7 +107,7 @@ module.exports = NodeHelper.create({
       }
 
       if (silenceFrames >= silenceDuration) {
-        if (!isSilenceDetected && this.isRecording) {
+        if (!isSilenceDetected && this.state === 'recording') {
           console.log("Silence detected...");
           this.stopRecording();
           isSilenceDetected = true;
@@ -137,18 +140,21 @@ module.exports = NodeHelper.create({
     this.sendSocketNotification('START_RECORDING');
 
     // If we're recording, let's stop and clean-up and restart.
-    if (this.isRecording) {
+    if (this.state === 'recording') {
       this.audio = [];
       this.cleanupFiles();
+
+      if (this.player) player.kill();
     }
 
 
     // Set the flag.
-    this.isRecording = true;
+    this.state = 'recording';
   },
 
   stopRecording: async function() {
-    if (this.isRecording) {
+    // Record and convert.
+    if (this.state === 'recording') {
       this.playSound(this.soundFolder + '/notification_stop.mp3');
       this.sendSocketNotification('STOP_RECORDING');
 
@@ -158,32 +164,44 @@ module.exports = NodeHelper.create({
       wav.fromScratch(1, 16000, '16', this.audio);
       fs.writeFileSync(path, wav.toBuffer());
 
-      // Reset the flag.
-      this.isRecording = false;
-
       // Close the output stream
       console.log('Recording complete!');
 
       // This generates /tmp/request.mp3.
       await this.convertWavToMp3();
 
-      // Upload directly.
-      const requestText = await this.uploadToWhisper();
+      // Reset the flag.
+      this.state = 'processing';
+    }
 
+    // Process to text.
+    let requestText = '';
+    if (this.state === 'processing') {
+      // Upload directly.
+      requestText = await this.uploadToWhisper();
+    }
+
+    // Get a reply.
+    let replyText = '';
+    if (this.state === 'processing') {
       if (requestText.includes('command')) {
         this.processCommand(requestText);
       }
       else {
         try {
           if (requestText.length > 0) {
-            const reply = await this.getGPTReply(requestText);
-            this.ttsPlay(reply);
+            replyText = await this.getGPTReply(requestText);
           }
         }
         catch (e) {
           console.log(e);
         }
       }
+    }
+
+    // Text-to-speech.
+    if (this.state === 'processing' && replyText.length > 0) {
+      this.ttsPlay(replyText);
     }
   },
 
@@ -228,7 +246,7 @@ module.exports = NodeHelper.create({
         writer.on('finish', () => {
           // Play the saved audio file
           console.log('Finish event fired.');
-          PlayerWav.play(tempFilePath, function(err){
+          this.player = PlayerWav.play(tempFilePath, function(err){
             console.log(err);
           });
         });
@@ -353,7 +371,8 @@ module.exports = NodeHelper.create({
   },
 
   playSound: function playSound(soundFilePath) {
-    PlayerMP3.play(soundFilePath, (err) => {
+    if (this.player) player.kill();
+    this.player = PlayerMP3.play(soundFilePath, (err) => {
       if (err) {
         console.error(`Failed to play sound ${soundFilePath}: ${err}`);
       }
