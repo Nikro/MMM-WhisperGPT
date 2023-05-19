@@ -97,6 +97,12 @@ module.exports = NodeHelper.create({
 
       if (this.state === 'recording') {
         this.audio.push(...pcm);
+
+        // Make sure we kill any audio!
+        if (this.player) {
+          this.player.kill('SIGINT');
+          this.player = false;
+        }
       }
 
       // Let's try and detect X seconds of silence.
@@ -147,7 +153,7 @@ module.exports = NodeHelper.create({
     }
 
     if (this.player) {
-      this.player.kill();
+      this.player.kill('SIGINT');
       this.player = false;
     }
 
@@ -376,7 +382,7 @@ module.exports = NodeHelper.create({
 
   playSound: function playSound(soundFilePath) {
     if (this.player) {
-      this.player.kill();
+      this.player.kill('SIGINT');
       this.player = false;
     }
     this.player = PlayerMP3.play(soundFilePath, (err) => {
