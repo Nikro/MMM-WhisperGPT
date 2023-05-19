@@ -70,7 +70,7 @@ Module.register("MMM-WhisperGPT", {
         wrapper.innerHTML = '<div><span class="bright">Reply: </span>' + this.replyText + '</div>';
 
         // Reset state in 10 seconds.
-        setTimeout(this.resetState.bind(this), (this.calculateDisplayTime(replyText, 200) + 5) * 1000);
+        setTimeout(this.resetState.bind(this), (this.calculateDisplayTime(this.replyText, 150) + 10) * 1000);
         break;
       default:
         wrapper.innerHTML = "Unknown state";
@@ -143,7 +143,7 @@ Module.register("MMM-WhisperGPT", {
         message: '<span class="bright">Reply:</span> ' + payload,
         title: `${this.config.picovoiceWord } Replied...`,
         imageFA: 'robot',
-        timer: (this.calculateDisplayTime(payload, 200) + 5) * 1000
+        timer: (this.calculateDisplayTime(payload, 150) + 5) * 1000
       };
       this.sendNotification("SHOW_ALERT", notification);
     }
