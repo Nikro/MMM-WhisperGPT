@@ -91,6 +91,8 @@ module.exports = NodeHelper.create({
 
 
     let isInterrupted = false;
+    this.backgroundNoiseLevel = 0;
+    this.backgroundNoiseSamples = 0;
 
     while (!isInterrupted) {
       const pcm = await recorder.read();
@@ -100,14 +102,10 @@ module.exports = NodeHelper.create({
       }
 
       // Let's try and detect X seconds of silence.
-      const rms = Math.sqrt(pcm.reduce((sum, sample) => sum + sample ** 2, 0) / pcm.length);
-      if (rms < silenceThreshold) {
-        silenceFrames++;
-      } else {
-        silenceFrames = 0;
-      }
+      this.updateBackgroundNoiseLevel();
+      this.detectSilence();
 
-      if (silenceFrames >= silenceDuration) {
+      if (this.silenceFrames >= silenceDuration) {
         if (!isSilenceDetected && this.state === 'recording') {
           console.log("Silence detected...");
           this.stopRecording();
@@ -136,7 +134,32 @@ module.exports = NodeHelper.create({
     });
   },
 
-  startRecording: function() {
+  updateBackgroundNoiseLevel: function(pcm) {
+    // Calculate the RMS of the current PCM data
+    const rms = Math.sqrt(pcm.reduce((sum, sample) => sum + sample ** 2, 0) / pcm.length);
+
+    // Update the background noise level
+    this.backgroundNoiseLevel = ((this.backgroundNoiseLevel * this.backgroundNoiseSamples) + rms) / (this.backgroundNoiseSamples + 1);
+    this.backgroundNoiseSamples++;
+  },
+
+  detectSilence: function(pcm) {
+    // Calculate the RMS of the current PCM data
+    const rms = Math.sqrt(pcm.reduce((sum, sample) => sum + sample ** 2, 0) / pcm.length);
+
+    // Calculate the silence threshold based on the background noise level
+    const silenceThreshold = this.backgroundNoiseLevel * 1.1; // Adjust this factor as needed
+
+    // Detect silence
+    if (rms < silenceThreshold) {
+      this.silenceFrames++;
+    } else {
+      this.silenceFrames = 0;
+    }
+  },
+
+
+startRecording: function() {
     this.playSound(this.soundFolder + '/notification_start.mp3');
     this.sendSocketNotification('START_RECORDING');
 
