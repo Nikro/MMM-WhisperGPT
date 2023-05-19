@@ -226,6 +226,8 @@ module.exports = NodeHelper.create({
     parsedUrl.query = params;
     const apiUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}:${parsedUrl.port}/api/tts?${querystring.stringify(params)}`;
 
+    const self = this;
+
     axios({
       method: 'post',
       url: apiUrl,
@@ -240,12 +242,12 @@ module.exports = NodeHelper.create({
         response.data.pipe(writer);
         writer.on('error', (error) => {
           console.error('Error occurred:', error);
-        })
+        });
 
         writer.on('finish', () => {
           // Play the saved audio file
           console.log('Playing audio reply...');
-          this.player = PlayerWav.play(tempFilePath, function(err){
+          self.player = PlayerWav.play(tempFilePath, function(err){
             console.log(err);
           });
         });
