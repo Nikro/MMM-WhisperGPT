@@ -97,13 +97,6 @@ module.exports = NodeHelper.create({
 
       if (this.state === 'recording') {
         this.audio.push(...pcm);
-
-        // Make sure we kill any audio!
-        if (this.player !== false) {
-          Log.info('- Killing audio -');
-          this.player.kill('SIGINT');
-          this.player = false;
-        }
       }
 
       // Let's try and detect X seconds of silence.
@@ -155,6 +148,7 @@ module.exports = NodeHelper.create({
 
     if (this.player !== false) {
       Log.info('- Killing audio -');
+      console.log(this.player);
       this.player.kill('SIGINT');
       this.player = false;
     }
@@ -248,13 +242,6 @@ module.exports = NodeHelper.create({
           console.error('Error occurred:', error);
         });
 
-        response.data.on('end', () => {
-          console.log('No more data in response.');
-        });
-
-        writer.on('finish', () => {
-          console.log('Finish event fired.');
-        });
         writer.on('finish', () => {
           // Play the saved audio file
           console.log('Finish event fired.');
