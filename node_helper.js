@@ -144,16 +144,16 @@ module.exports = NodeHelper.create({
     if (this.state === 'recording') {
       this.audio = [];
       this.cleanupFiles();
-
-      if (this.player) {
-        this.player.kill();
-        this.player = false;
-      }
     }
 
+    if (this.player) {
+      this.player.kill();
+      this.player = false;
+    }
 
     // Set the flag.
     this.state = 'recording';
+    this.sendSocketNotification('HIDE_ALERT');
   },
 
   stopRecording: async function() {
