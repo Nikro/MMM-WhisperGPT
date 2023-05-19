@@ -153,7 +153,7 @@ module.exports = NodeHelper.create({
 
     // Set the flag.
     this.state = 'recording';
-    this.sendNotification('HIDE_ALERT');
+    this.sendSocketNotification('HIDE_ALERT');
   },
 
   stopRecording: async function() {
