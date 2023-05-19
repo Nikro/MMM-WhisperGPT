@@ -100,6 +100,7 @@ module.exports = NodeHelper.create({
 
         // Make sure we kill any audio!
         if (this.player) {
+          Log.info('- Killing audio -');
           this.player.kill('SIGINT');
           this.player = false;
         }
@@ -153,6 +154,7 @@ module.exports = NodeHelper.create({
     }
 
     if (this.player) {
+      Log.info('- Killing audio -');
       this.player.kill('SIGINT');
       this.player = false;
     }
@@ -382,6 +384,7 @@ module.exports = NodeHelper.create({
 
   playSound: function playSound(soundFilePath) {
     if (this.player) {
+      Log.info('- Killing audio -');
       this.player.kill('SIGINT');
       this.player = false;
     }
