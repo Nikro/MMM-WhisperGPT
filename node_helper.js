@@ -11,6 +11,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const wave = require('wavefile');
 const querystring = require('querystring');
+const { DOMParser, XMLSerializer } = require('xmldom');
 
 // ChainLang.
 const { ConversationChain } = require("langchain/chains");
@@ -187,6 +188,7 @@ module.exports = NodeHelper.create({
   },
 
   ttsPlay: function(text) {
+    text = this.fixMalformedXML(text);
     let params = {
       voice: this.config.mimic3Voice,
       noiseScale: 0.2,
@@ -356,5 +358,14 @@ module.exports = NodeHelper.create({
         console.error(`Failed to play sound ${soundFilePath}: ${err}`);
       }
     });
+  },
+
+
+  fixMalformedXML: function (xmlString) {
+    const parser = new DOMParser();
+    const dom = parser.parseFromString(xmlString, "text/xml");
+    const serializer = new XMLSerializer();
+    const fixedXMLString = serializer.serializeToString(dom);
+    return fixedXMLString;
   }
 });
