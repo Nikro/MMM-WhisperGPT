@@ -99,7 +99,7 @@ module.exports = NodeHelper.create({
         this.audio.push(...pcm);
 
         // Make sure we kill any audio!
-        if (this.player) {
+        if (this.player !== false) {
           Log.info('- Killing audio -');
           this.player.kill('SIGINT');
           this.player = false;
@@ -153,7 +153,7 @@ module.exports = NodeHelper.create({
       this.cleanupFiles();
     }
 
-    if (this.player) {
+    if (this.player !== false) {
       Log.info('- Killing audio -');
       this.player.kill('SIGINT');
       this.player = false;
@@ -383,7 +383,7 @@ module.exports = NodeHelper.create({
   },
 
   playSound: function playSound(soundFilePath) {
-    if (this.player) {
+    if (this.player !== false) {
       Log.info('- Killing audio -');
       this.player.kill('SIGINT');
       this.player = false;
