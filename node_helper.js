@@ -102,8 +102,8 @@ module.exports = NodeHelper.create({
       }
 
       // Let's try and detect X seconds of silence.
-      this.updateBackgroundNoiseLevel();
-      this.detectSilence();
+      this.updateBackgroundNoiseLevel(pcm);
+      this.detectSilence(pcm);
 
       if (this.silenceFrames >= silenceDuration) {
         if (!isSilenceDetected && this.state === 'recording') {
