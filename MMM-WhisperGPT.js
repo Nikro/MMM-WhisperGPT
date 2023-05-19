@@ -147,9 +147,6 @@ Module.register("MMM-WhisperGPT", {
       };
       this.sendNotification("SHOW_ALERT", notification);
     }
-    else if (notification === 'HIDE_ALERT') {
-      Module.get('alert').hide();
-    }
     this.updateDom();
 	},
 
