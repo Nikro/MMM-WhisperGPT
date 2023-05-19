@@ -38,6 +38,7 @@ module.exports = NodeHelper.create({
 
       // Can be: idle, recording, processing.
       this.state = 'idle';
+      this.player = false;
 
       // Audio recorder.
       this.setupAudioRecorder();
@@ -144,7 +145,10 @@ module.exports = NodeHelper.create({
       this.audio = [];
       this.cleanupFiles();
 
-      if (this.player) player.kill();
+      if (this.player) {
+        this.player.kill();
+        this.player = false;
+      }
     }
 
 
@@ -371,7 +375,10 @@ module.exports = NodeHelper.create({
   },
 
   playSound: function playSound(soundFilePath) {
-    if (this.player) player.kill();
+    if (this.player) {
+      this.player.kill();
+      this.player = false;
+    }
     this.player = PlayerMP3.play(soundFilePath, (err) => {
       if (err) {
         console.error(`Failed to play sound ${soundFilePath}: ${err}`);
