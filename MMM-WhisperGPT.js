@@ -132,7 +132,9 @@ Module.register("MMM-WhisperGPT", {
     else if (notification === 'REQUEST_PROCESSED') {
       Log.info('Text: ' + payload);
       this.state = 'request_received';
-      this.requestText = payload;
+
+      let maxLength = 500;
+      this.requestText = payload.length > maxLength ? payload.slice(0, maxLength) + '...' : payload;
     }
     else if (notification === 'REPLY_RECEIVED') {
       Log.info('Reply: ' + payload);
@@ -140,7 +142,7 @@ Module.register("MMM-WhisperGPT", {
       this.replyText = payload;
 
       const notification = {
-        message: '<span class="bright">Reply:</span><div class="alert-reply-content">' + payload + '</div>',
+        message: '<span class="bright">Reply:</span><div class="alert-reply-content">' + payload.replace(/\n/g, '<br>') + '</div>',
         title: `${this.config.picovoiceWord } Replied...`,
         imageFA: 'robot',
         timer: (this.calculateDisplayTime(payload, 150) + 5) * 1000

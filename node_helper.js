@@ -123,8 +123,8 @@ module.exports = NodeHelper.create({
       const keywordIndex = porcupine.process(pcm);
       if (keywordIndex >= 0) {
         Log.info('Keyword detected: ' + this.config.picovoiceWord);
-        this.startRecording();
         this.sendSocketNotification('KEYWORD_DETECTED', this.config.picovoiceWord);
+        this.startRecording();
       }
     }
 
