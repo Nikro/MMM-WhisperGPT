@@ -53,7 +53,7 @@ var config = {
 | `picovoiceKey`                    | **Required** | Picovoice access key - you have to register to obtain it - this is used for trigger word.
 | `picovoiceWord`                   | *Optional* | Picovoice trigger word, i.e. BUMBLEBEE, JARVIS, etc. Defaults to JARVIS.
 | `picovoiceSilenceTime`            | *Optional* | Silence period - defaults to 3 (3 seconds).
-| `picovoiceSilenceThreshold`       | *Optional* | Silence threshold, my calculations are 500 is roughly enough. Defaults to 600.
+| `picovoiceSilenceThreshold`       | *Optional* | This is usually background noise * THIS NUMBER. Default value is 1.1 (aka 10%).
 | `audioDeviceIndex`                | *Optional* | Audio device - i.e. 3 - those will be printed out when you're using debug mode. Defaults to 0.
 | `whisperUrl`                      | **Required** | URL (or IP?) to self-hosted instance of the Whisper.
 | `whisperMethod`                   | *Optional* | Whisper method: openai-whisper or faster-whisper. Defaults to: faster-whisper.

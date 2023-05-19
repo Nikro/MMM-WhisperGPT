@@ -21,7 +21,7 @@ Module.register("MMM-WhisperGPT", {
       picovoiceKey: '',
       picovoiceWord: 'JARVIS',
       picovoiceSilenceTime: 3,
-      picovoiceSilenceThreshold: 700,
+      picovoiceSilenceThreshold: 1.1,
       audioDeviceIndex: 0,
       whisperUrl: '',
       whisperLanguage: 'en',

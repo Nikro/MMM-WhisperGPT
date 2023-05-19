@@ -62,7 +62,6 @@ module.exports = NodeHelper.create({
     this.audio = [];
 
     const frameLength = porcupine.frameLength;
-    const silenceThreshold = this.config.picovoiceSilenceThreshold;
     const silenceDuration = this.config.picovoiceSilenceTime * 16000 / frameLength;
     let silenceFrames = 0;
     let isSilenceDetected = false;
@@ -148,11 +147,8 @@ module.exports = NodeHelper.create({
     const rms = Math.sqrt(pcm.reduce((sum, sample) => sum + sample ** 2, 0) / pcm.length);
 
     // Calculate the silence threshold based on the background noise level
-    const silenceThreshold = this.backgroundNoiseLevel * 1.1; // Adjust this factor as needed
-    console.log('silenceThreshold');
-    console.log(silenceThreshold);
-    console.log('-');
-    console.log(rms);
+    const silenceThreshold = this.backgroundNoiseLevel * this.config.picovoiceSilenceThreshold;
+
     // Detect silence
     if (rms < silenceThreshold) {
       this.silenceFrames++;
