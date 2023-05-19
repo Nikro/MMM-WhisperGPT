@@ -149,7 +149,10 @@ module.exports = NodeHelper.create({
 
     // Calculate the silence threshold based on the background noise level
     const silenceThreshold = this.backgroundNoiseLevel * 1.1; // Adjust this factor as needed
-
+    console.log('silenceThreshold');
+    console.log(silenceThreshold);
+    console.log('-');
+    console.log(rms);
     // Detect silence
     if (rms < silenceThreshold) {
       this.silenceFrames++;
