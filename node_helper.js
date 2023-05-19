@@ -240,11 +240,11 @@ module.exports = NodeHelper.create({
         response.data.pipe(writer);
         writer.on('error', (error) => {
           console.error('Error occurred:', error);
-        });
+        })
 
         writer.on('finish', () => {
           // Play the saved audio file
-          console.log('Finish event fired.');
+          console.log('Playing audio reply...');
           this.player = PlayerWav.play(tempFilePath, function(err){
             console.log(err);
           });
