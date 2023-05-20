@@ -158,7 +158,12 @@ module.exports = NodeHelper.create({
   },
 
 
-startRecording: function() {
+  startRecording: function() {
+    if (this.player !== false) {
+      this.player.kill('SIGINT');
+      this.player = false;
+    }
+
     this.playSound(this.soundFolder + '/notification_start.mp3');
     this.sendSocketNotification('START_RECORDING');
 
@@ -166,11 +171,6 @@ startRecording: function() {
     if (this.state === 'recording') {
       this.audio = [];
       this.cleanupFiles();
-    }
-
-    if (this.player !== false) {
-      this.player.kill('SIGINT');
-      this.player = false;
     }
 
     // Set the flag.
