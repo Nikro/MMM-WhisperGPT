@@ -274,6 +274,7 @@ module.exports = NodeHelper.create({
       })
       .catch(function (error) {
         console.log(error);
+        this.sendSocketNotification('ERROR', 'Error from Mimic3.');
       });
   },
 
@@ -293,6 +294,7 @@ module.exports = NodeHelper.create({
         .catch((error) => {
           console.log('Something went wrong with MP3 encoding: ' + error);
           reject(error); // Reject the promise if encoding fails
+          this.sendSocketNotification('ERROR', 'Error converting WAV to MP3.');
         });
     });
   },
@@ -331,6 +333,7 @@ module.exports = NodeHelper.create({
 
     } catch (error) {
       console.error('Error uploading file:', error);
+      this.sendSocketNotification('ERROR', 'Whisper URL not reachable.');
     }
   },
 
@@ -359,14 +362,19 @@ module.exports = NodeHelper.create({
 
   getGPTReply: async function(requestText) {
     console.log('Sending request to OpenAPI: ' + requestText);
-    const response = await this.chain.call({
-      input: requestText,
-    });
-    console.log('OpenAI Response:');
-    console.log(response);
-    this.sendSocketNotification('REPLY_RECEIVED', response.response);
+    try {
+      const response = await this.chain.call({
+        input: requestText,
+      });
+      console.log('OpenAI Response:');
+      console.log(response);
+      this.sendSocketNotification('REPLY_RECEIVED', response.response);
 
-    return response.response;
+      return response.response;
+    }
+    catch (e) {
+      this.sendSocketNotification('ERROR', 'Error from ChatGPT API.');
+    }
   },
 
   processCommand: function(text) {

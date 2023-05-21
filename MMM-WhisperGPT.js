@@ -69,8 +69,13 @@ Module.register("MMM-WhisperGPT", {
       case 'reply_received':
         wrapper.innerHTML = '<div><span class="bright">Reply: </span>' + this.replyText + '</div>';
 
-        // Reset state in 10 seconds.
+        // Reset state in X seconds.
         setTimeout(this.resetState.bind(this), (this.calculateDisplayTime(this.replyText, 150) + 20) * 1000);
+        break;
+      case 'error':
+        wrapper.innerHTML = '<div><span class="bright">ERROR: </span>' + this.error + '</div>';
+        // Reset state in 10 seconds.
+        setTimeout(this.resetState.bind(this), 10 * 1000);
         break;
       default:
         wrapper.innerHTML = "Unknown state";
@@ -142,6 +147,10 @@ Module.register("MMM-WhisperGPT", {
     else if (notification === "CUSTOM_COMMAND") {
       // Ping other modules.
       this.sendNotification("WHISPERGPT_COMMAND", payload);
+    }
+    else if (notification === "ERROR") {
+      this.state = 'error';
+      this.error = payload;
     }
     else if (notification === 'REPLY_RECEIVED') {
       Log.info('Reply: ' + payload);
