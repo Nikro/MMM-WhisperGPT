@@ -369,8 +369,8 @@ module.exports = NodeHelper.create({
     return response.response;
   },
 
-  processCommand: function() {
-
+  processCommand: function(text) {
+    this.sendSocketNotification('CUSTOM_COMMAND', text);
   },
 
   cleanupFiles: function() {

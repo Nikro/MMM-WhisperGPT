@@ -116,6 +116,9 @@ Module.register("MMM-WhisperGPT", {
     if (notification === 'KEYWORD_DETECTED') {
       Log.info('Keyword detected: ', payload);
 			this.triggeredKeyword = payload;
+
+			// Ping other modules.
+      this.sendNotification("WHISPERGPT_KEYWORD_DETECTED", payload);
 		}
 		else if (notification === 'START_RECORDING') {
       Log.info('Recording: start');
@@ -135,6 +138,10 @@ Module.register("MMM-WhisperGPT", {
 
       let maxLength = 500;
       this.requestText = payload.length > maxLength ? payload.slice(0, maxLength) + '...' : payload;
+    }
+    else if (notification === "CUSTOM_COMMAND") {
+      // Ping other modules.
+      this.sendNotification("WHISPERGPT_COMMAND", payload);
     }
     else if (notification === 'REPLY_RECEIVED') {
       Log.info('Reply: ' + payload);
