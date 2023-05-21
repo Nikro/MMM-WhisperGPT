@@ -170,9 +170,11 @@ Module.register("MMM-WhisperGPT", {
   },
 
   resetState: function() {
-	  this.state = 'idle';
-	  this.requestText = '';
-	  this.replyText = '';
-    this.updateDom();
+	  if (this.state === 'reply_received') {
+      this.state = 'idle';
+      this.requestText = '';
+      this.replyText = '';
+      this.updateDom();
+    }
   }
 });
