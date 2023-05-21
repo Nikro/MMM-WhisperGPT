@@ -210,7 +210,7 @@ module.exports = NodeHelper.create({
     // Get a reply.
     let replyText = '';
     if (this.state === 'processing') {
-      if (requestText.includes('command')) {
+      if (requestText.toLowerCase().includes('command')) {
         this.processCommand(requestText);
       }
       else {
