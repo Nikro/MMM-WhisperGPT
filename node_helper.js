@@ -215,7 +215,7 @@ module.exports = NodeHelper.create({
       }
       else {
         try {
-          if (requestText.length > 0) {
+          if (requestText && requestText.length > 0) {
             replyText = await this.getGPTReply(requestText);
           }
         }
@@ -226,7 +226,7 @@ module.exports = NodeHelper.create({
     }
 
     // Text-to-speech.
-    if (this.state === 'processing' && replyText.length > 0) {
+    if (this.state === 'processing' && requestText && replyText.length > 0) {
       this.ttsPlay(replyText);
     }
   },
