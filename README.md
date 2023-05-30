@@ -2,7 +2,10 @@
 
 This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/).
 
-[![Watch the video](https://img.youtube.com/vi/l_r8pJOCJcw/mqdefault.jpg)]([https://youtu.be/nTQUwghvy5Q](https://www.youtube.com/watch?v=l_r8pJOCJcw))
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=l_r8pJOCJcw
+" target="_blank"><img src="http://img.youtube.com/vi/l_r8pJOCJcw/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="320" height="240" border="0" /></a>
+
 
 **How it works** 👉 https://nikro.me/articles/professional/crafting-our-ai-assistant/
 
