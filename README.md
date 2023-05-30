@@ -2,6 +2,10 @@
 
 This is a module for the [MagicMirror²](https://github.com/MichMich/MagicMirror/).
 
+[![Watch the video](https://img.youtube.com/vi/l_r8pJOCJcw/mqdefault.jpg)]([https://youtu.be/nTQUwghvy5Q](https://www.youtube.com/watch?v=l_r8pJOCJcw))
+
+**How it works** 👉 https://nikro.me/articles/professional/crafting-our-ai-assistant/
+
 Goal of the module is to create a custom interactive widget that uses Open AI tools:
 
 - Whisper - self-hosted model for voice-to-text transcription.
